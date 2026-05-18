@@ -131,7 +131,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
   </div>
   <div class="field">
     <label>Anthropic API Key</label>
-    <input type="password" id="ant-key" placeholder="sk-ant-..." autocomplete="off" inputmode="text">
+    <input type="text" id="ant-key" placeholder="sk-ant-..." autocomplete="off" inputmode="text">
   </div>
   <div class="field">
     <label>Athlete ID</label>
@@ -489,6 +489,7 @@ async function send(override) {
         'Content-Type': 'application/json',
         'x-api-key': k.ant,
         'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'messages-2023-12-15',
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
