@@ -120,9 +120,8 @@ body{
 .c-muted{color:var(--text2)}
 
 /* ── TODAY CARD ── */
-.today-card{background:var(--card);border-radius:20px;padding:18px;margin-bottom:12px;border:1px solid var(--border);position:relative;overflow:hidden}
-.today-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);border-radius:0}
-.today-inner{padding-left:14px}
+.today-card{background:var(--card);border-radius:20px;padding:18px;margin-bottom:12px;border:1px solid var(--border);border-left:4px solid var(--accent)}
+.today-inner{padding-left:10px}
 .today-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
 .today-left{}
 .today-daydate{font-size:11px;font-weight:600;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase;margin-bottom:4px}
@@ -311,7 +310,7 @@ body{
       <div class="metric-card" onclick="explainMetric('tsb')" style="cursor:pointer">
         <div class="mc-val c-muted" id="m-tsb">--</div>
         <div class="mc-lbl">Form</div>
-        <div class="mc-sub">Tap to learn</div>
+        <div class="mc-sub" id="tsb-zone-label">Tap to learn</div>
       </div>
     </div>
 
@@ -523,6 +522,7 @@ function init(){
   updateHeader();
   buildWeekStrip();
   updateRaceCard();
+  buildFuelingPlan();
   fetchData();
 }
 
@@ -546,14 +546,7 @@ function updateHeader(){
   document.getElementById('today-session').textContent=sess.name;
   document.querySelector('.today-card::before');
   const tc=document.getElementById('today-card');
-  tc.style.setProperty('--session-color',sess.accent);
-  tc.querySelector('.today-card::before');
-  // Set left bar color via inline style on pseudo-element workaround
-  tc.style.borderLeftColor=sess.accent;
-  tc.style.borderLeftWidth='4px';
-  tc.style.borderLeftStyle='solid';
-  tc.style.paddingLeft='14px';
-  tc.querySelector('.today-inner').style.paddingLeft='0';
+  // session accent color handled by CSS only
 }
 
 function buildWeekStrip(){
@@ -768,6 +761,11 @@ function getFormZone(ctl, atl) {
 }
 
 function updateFormZone(ctl, atl) {
+  if (ctl == null || atl == null) {
+    const sub = document.getElementById('tsb-zone-label');
+    if (sub) sub.textContent = 'Tap to learn';
+    return;
+  }
   const zone = getFormZone(ctl, atl);
   const sub = document.getElementById('tsb-zone-label');
   if (sub) {
