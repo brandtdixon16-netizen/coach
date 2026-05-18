@@ -222,6 +222,17 @@ body{
 .tab-label{font-size:10px;font-weight:600;letter-spacing:0.04em}
 .tab-item.active .tab-label{color:var(--accent)}
 
+
+/* ── FUELING CARD ── */
+.fuel-card{background:var(--card);border-radius:20px;padding:16px 18px;margin-bottom:12px;border:1px solid var(--border);border-left:4px solid var(--accent)}
+.fuel-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.fuel-emoji{font-size:16px}
+.fuel-label{font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--accent);text-transform:uppercase}
+.fuel-body{font-size:14px;line-height:1.75;color:rgba(255,255,255,0.7)}
+.fuel-timing{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.fuel-row{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:rgba(255,255,255,0.6)}
+.fuel-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+
 /* ── RACE CARD ── */
 .race-card{background:linear-gradient(135deg,#1a0a06 0%,#2d1008 100%);border:1px solid rgba(255,87,34,0.2);border-radius:20px;padding:18px;margin-bottom:12px}
 .race-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
@@ -287,20 +298,31 @@ body{
   <div class="scroll" id="scroll">
 
     <div class="metrics-row">
-      <div class="metric-card">
+      <div class="metric-card" onclick="explainMetric('ctl')" style="cursor:pointer">
         <div class="mc-val c-accent" id="m-ctl">--</div>
-        <div class="mc-lbl">CTL</div>
-        <div class="mc-sub">Fitness</div>
+        <div class="mc-lbl">Fitness</div>
+        <div class="mc-sub">Tap to learn</div>
       </div>
-      <div class="metric-card">
+      <div class="metric-card" onclick="explainMetric('atl')" style="cursor:pointer">
         <div class="mc-val c-muted" id="m-atl">--</div>
-        <div class="mc-lbl">ATL</div>
-        <div class="mc-sub">Fatigue</div>
+        <div class="mc-lbl">Fatigue</div>
+        <div class="mc-sub">Tap to learn</div>
       </div>
-      <div class="metric-card">
+      <div class="metric-card" onclick="explainMetric('tsb')" style="cursor:pointer">
         <div class="mc-val c-muted" id="m-tsb">--</div>
-        <div class="mc-lbl">TSB</div>
-        <div class="mc-sub">Form</div>
+        <div class="mc-lbl">Form</div>
+        <div class="mc-sub">Tap to learn</div>
+      </div>
+    </div>
+
+    <!-- Metric explanation modal -->
+    <div id="metric-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;align-items:flex-end;justify-content:center;max-width:430px;margin:0 auto" onclick="closeModal()">
+      <div style="background:#1c1c1e;border-radius:24px 24px 0 0;padding:28px 24px 48px;width:100%;border-top:1px solid rgba(255,255,255,0.1)" onclick="event.stopPropagation()">
+        <div style="width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:0 auto 24px"></div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase;margin-bottom:6px" id="modal-label"></div>
+        <div style="font-size:26px;font-weight:800;letter-spacing:-0.5px;margin-bottom:16px;font-family:var(--font-tight)" id="modal-val"></div>
+        <div style="font-size:15px;line-height:1.75;color:rgba(255,255,255,0.7)" id="modal-text"></div>
+        <button onclick="closeModal()" style="margin-top:24px;width:100%;background:rgba(255,255,255,0.08);border:none;border-radius:14px;padding:15px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font)">Got it</button>
       </div>
     </div>
 
@@ -337,6 +359,16 @@ body{
           </div>
         </div>
       </div>
+    </div>
+
+
+    <div class="fuel-card" id="fuel-card" style="display:none">
+      <div class="fuel-header">
+        <span class="fuel-emoji">⚡</span>
+        <div class="fuel-label">Fueling Plan</div>
+      </div>
+      <div class="fuel-body" id="fuel-body"></div>
+      <div class="fuel-timing" id="fuel-timing"></div>
     </div>
 
     <div id="err-container"></div>
@@ -673,6 +705,155 @@ function toggleMic(){
   recognition.onend=()=>{isRecording=false;btn.classList.remove('recording');input.placeholder='Ask your coach...';if(input.value.trim())send()};
   recognition.onerror=()=>{isRecording=false;btn.classList.remove('recording');input.placeholder='Ask your coach...'};
   recognition.start();
+}
+
+
+function explainMetric(type){
+  const modal = document.getElementById('metric-modal');
+  const label = document.getElementById('modal-label');
+  const val = document.getElementById('modal-val');
+  const text = document.getElementById('modal-text');
+  const ctl = athleteData?.ctl;
+  const atl = athleteData?.atl;
+  const tsb = athleteData?.tsb;
+  const explanations = {
+    ctl: {
+      label: 'Fitness — Chronic Training Load',
+      value: ctl != null ? ctl.toFixed(1) : '--',
+      text: 'Your fitness score. Calculated as a 42-day rolling average of your daily training stress. The higher this number, the fitter you are. You started this block at 30.8 and are targeting 87 by race week. Right now at ' + (ctl != null ? ctl.toFixed(1) : '--') + ' you are in Week 1 of Base — right on track.'
+    },
+    atl: {
+      label: 'Fatigue — Acute Training Load',
+      value: atl != null ? atl.toFixed(1) : '--',
+      text: 'Your fatigue score. A 7-day rolling average of training stress. It rises fast when you train hard and drops quickly on easy days. When Fatigue is higher than Fitness it means your body is freshly stressed — completely normal mid-week or after a long run. It is not a warning sign on its own.'
+    },
+    tsb: {
+      label: 'Form — Training Stress Balance',
+      value: tsb != null ? (tsb > 0 ? '+' : '') + tsb.toFixed(1) : '--',
+      text: (() => {
+        const zone = getFormZone(ctl, atl);
+        const zoneName = zone.label;
+        const baseText = 'Your form score — Fitness minus Fatigue. Negative means you are carrying training load and your body is adapting. Positive means you are rested and fresh.';
+        const zoneText = {
+          'Fresh': ' You are currently Fresh. Your body is recovered and ready. Good time to push quality sessions.',
+          'Transition': ' You are in Transition — slightly fatigued from recent training. Normal and fine. Easy days are doing their job.',
+          'Optimal': ' You are in the Optimal training zone. This is exactly where you want to be mid-block. Your body is adapting without being overstressed. -10 to -30 is the target range.',
+          'High Fatigue': ' You are carrying High Fatigue. This does not mean stop — but it means your easy days need to stay genuinely easy and your next hard session should be monitored carefully.',
+          'Unknown': ''
+        };
+        return baseText + (zoneText[zoneName] || '');
+      })()
+    }
+  };
+  const info = explanations[type];
+  label.textContent = info.label;
+  val.textContent = info.value;
+  text.textContent = info.text;
+  modal.style.display = 'flex';
+}
+
+function closeModal(){
+  document.getElementById('metric-modal').style.display = 'none';
+}
+
+
+// ── FORM ZONE ──
+function getFormZone(ctl, atl) {
+  if (ctl == null || atl == null) return { label: 'Unknown', color: 'c-muted' };
+  const pct = ((ctl - atl) / ctl) * 100;
+  if (pct > 0) return { label: 'Fresh', color: 'c-green', pct };
+  if (pct > -10) return { label: 'Transition', color: 'c-muted', pct };
+  if (pct > -30) return { label: 'Optimal', color: 'c-green', pct };
+  return { label: 'High Fatigue', color: 'c-red', pct };
+}
+
+function updateFormZone(ctl, atl) {
+  const zone = getFormZone(ctl, atl);
+  const sub = document.getElementById('tsb-zone-label');
+  if (sub) {
+    sub.textContent = zone.label;
+    sub.style.color = zone.label === 'Optimal' || zone.label === 'Fresh' 
+      ? 'var(--green)' 
+      : zone.label === 'High Fatigue' 
+        ? 'var(--red)' 
+        : 'var(--text3)';
+  }
+}
+
+// ── FUELING PLAN ──
+function buildFuelingPlan() {
+  const now = new Date();
+  const dow = now.getDay();
+  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+  const weekNum = Math.max(1, Math.ceil((now - BLOCK_START) / msPerWeek) + 1);
+  const tsb = athleteData?.tsb ?? 0;
+  const card = document.getElementById('fuel-card');
+  const body = document.getElementById('fuel-body');
+  const timing = document.getElementById('fuel-timing');
+
+  // Rest days - no fueling card needed
+  if (dow === 3 || dow === 6) { card.style.display = 'none'; return; }
+
+  card.style.display = 'block';
+
+  const plans = {
+    // Sunday - Long run
+    0: () => {
+      // Estimate miles based on week in block
+      const miles = Math.min(11 + Math.floor((weekNum - 1) * 0.7), 22);
+      const hrs = miles / 9.2; // approx at easy pace
+      const gelsNeeded = Math.floor((hrs - 0.5) / 0.6);
+      const extraHeat = '+ Hawaii heat: hydrate every 15 min, consider extra gel if sweating heavily.';
+      body.textContent = `Long run ~${miles}mi. Full fueling protocol required.`;
+      timing.innerHTML = `
+        <div class="fuel-row"><span class="fuel-icon">🍌</span><span>2 hrs before: real food meal — oats, banana, toast. Keep it simple and familiar.</span></div>
+        <div class="fuel-row"><span class="fuel-icon">💧</span><span>30 min before: 16oz water.</span></div>
+        <div class="fuel-row"><span class="fuel-icon">⚡</span><span>During: 1 gel every 30-40 min starting at mile 3-4. Target ${gelsNeeded} gels total.</span></div>
+        <div class="fuel-row"><span class="fuel-icon">🌡️</span><span>${extraHeat}</span></div>
+        ${tsb < -20 ? '<div class="fuel-row"><span class="fuel-icon">⚠️</span><span>Form is low — start your first gel earlier at mile 2-3, your glycogen is already partially depleted.</span></div>' : ''}
+      `;
+    },
+    // Monday - Easy recovery
+    1: () => {
+      body.textContent = 'Easy recovery run 4-5mi. No fueling needed during.';
+      timing.innerHTML = `
+        <div class="fuel-row"><span class="fuel-icon">🍳</span><span>Normal breakfast 60-90 min before. Nothing special required.</span></div>
+        <div class="fuel-row"><span class="fuel-icon">💧</span><span>Water only during. Hydrate well after to recover from yesterday's long run.</span></div>
+      `;
+    },
+    // Tuesday - Run club
+    2: () => {
+      body.textContent = 'Run club 4mi push. Short enough that fueling during is not needed.';
+      timing.innerHTML = `
+        <div class="fuel-row"><span class="fuel-icon">🍌</span><span>Light snack 60 min before if running after work — banana, toast, or similar.</span></div>
+        <div class="fuel-row"><span class="fuel-icon">💧</span><span>Water only during. Hydrate well beforehand given Hawaii heat.</span></div>
+      `;
+    },
+    // Thursday - Quality day
+    4: () => {
+      // What type of Thursday based on week
+      const rotation = ['Steady state', 'Tempo', 'Hills', 'Easy tempo', 'Threshold', 'Hills', 'Threshold', 'Easy tempo'];
+      const sessionType = rotation[(weekNum - 1) % 8];
+      const isHard = ['Tempo', 'Threshold'].includes(sessionType);
+      body.textContent = `Quality day — ${sessionType}. ${isHard ? 'Higher intensity means carbs matter more today.' : 'Moderate effort, light fueling is enough.'}`;
+      timing.innerHTML = `
+        <div class="fuel-row"><span class="fuel-icon">🍳</span><span>${isHard ? 'Good breakfast 90 min before — oats or toast with protein. Avoid heavy or fatty food.' : 'Normal breakfast 60-90 min before.'}</span></div>
+        <div class="fuel-row"><span class="fuel-icon">⚡</span><span>${isHard ? '1 gel at 45-50 min if the session is pushing into the 7-8mi range and effort is high.' : 'No gel needed unless run extends past 75 min.'}</span></div>
+        <div class="fuel-row"><span class="fuel-icon">💧</span><span>Water every 15-20 min. Hawaii heat will push heart rate — stay on top of hydration.</span></div>
+      `;
+    },
+    // Friday - Easy run
+    5: () => {
+      body.textContent = 'Easy run 5-6mi. No fueling needed during.';
+      timing.innerHTML = `
+        <div class="fuel-row"><span class="fuel-icon">🍳</span><span>Normal meal 60-90 min before. No special prep needed.</span></div>
+        <div class="fuel-row"><span class="fuel-icon">💧</span><span>Water only. Keep it relaxed — this is recovery work.</span></div>
+      `;
+    }
+  };
+
+  const plan = plans[dow];
+  if (plan) plan();
 }
 
 window.addEventListener('load',()=>{
