@@ -2,625 +2,687 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Section 11 — Brandt's Coach</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>S11 Coach</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#080808;--surface:#111111;--surface2:#181818;--surface3:#1f1f1f;
-  --border:#1e1e1e;--border2:#282828;--border3:#333;
-  --text:#efefef;--muted:#606060;--muted2:#404040;
-  --accent:#c8f060;--accent2:#a8d040;--accent-dim:rgba(200,240,96,0.12);
-  --danger:#ff4545;--warn:#ffaa00;--info:#4a9eff;
-  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
-  --radius:10px;--radius-sm:7px;
+  --bg:#121212;
+  --card:#1c1c1e;
+  --card2:#242426;
+  --card3:#2c2c2e;
+  --border:rgba(255,255,255,0.08);
+  --border2:rgba(255,255,255,0.12);
+  --text:#ffffff;
+  --text2:rgba(255,255,255,0.65);
+  --text3:rgba(255,255,255,0.35);
+  --accent:#ff5722;
+  --accent2:#ff7043;
+  --accent-dim:rgba(255,87,34,0.15);
+  --green:#4caf50;
+  --green-dim:rgba(76,175,80,0.15);
+  --amber:#ff9800;
+  --amber-dim:rgba(255,152,0,0.15);
+  --red:#f44336;
+  --red-dim:rgba(244,67,54,0.15);
+  --blue:#2196f3;
+  --font:'Figtree',sans-serif;
+  --font-tight:'Plus Jakarta Sans',sans-serif;
+  --tab-height:72px;
 }
-html,body{height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5;display:flex;flex-direction:column;max-width:480px;margin:0 auto;position:relative}
+html{height:100%;background:var(--bg)}
+body{
+  height:100%;background:var(--bg);color:var(--text);
+  font-family:var(--font);font-size:15px;line-height:1.5;
+  display:flex;flex-direction:column;
+  max-width:430px;margin:0 auto;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
 
 /* ── SCREENS ── */
-.screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity 0.25s}
-.screen.active{opacity:1;pointer-events:all}
+.screen{position:fixed;inset:0;max-width:430px;margin:0 auto;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity 0.3s ease;background:var(--bg);z-index:1}
+.screen.active{opacity:1;pointer-events:all;z-index:2}
 
 /* ── SETUP ── */
-#screen-setup{background:var(--bg);overflow-y:auto;justify-content:center;padding:2.5rem 1.5rem}
-.s11-logo{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--accent);text-transform:uppercase;margin-bottom:2rem}
-.setup-h{font-size:28px;font-weight:300;line-height:1.15;margin-bottom:0.4rem}
-.setup-sub{color:var(--muted);font-size:13px;margin-bottom:2.5rem;line-height:1.6}
-.field{margin-bottom:1.1rem}
-.field label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:0.12em;color:var(--muted);margin-bottom:6px;text-transform:uppercase}
-.field input{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:12px 14px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:border-color 0.2s;-webkit-appearance:none}
+#screen-setup{justify-content:center;overflow-y:auto;padding:3rem 1.5rem 2rem}
+.setup-logo{font-family:var(--font);font-size:12px;font-weight:600;letter-spacing:0.05em;color:var(--accent);text-transform:uppercase;margin-bottom:2rem;display:flex;align-items:center;gap:8px}
+.setup-logo::before{content:'';width:20px;height:3px;background:var(--accent);border-radius:2px}
+.setup-h{font-family:var(--font-tight);font-size:32px;font-weight:800;line-height:1.1;margin-bottom:0.5rem;letter-spacing:-0.5px}
+.setup-sub{color:var(--text2);font-size:14px;margin-bottom:2.5rem;line-height:1.6}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:11px;font-weight:600;letter-spacing:0.1em;color:var(--text3);margin-bottom:8px;text-transform:uppercase}
+.field input{
+  width:100%;background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:14px 16px;color:var(--text);
+  font-family:var(--font);font-size:14px;outline:none;
+  transition:border-color 0.2s;-webkit-appearance:none;
+}
 .field input:focus{border-color:var(--accent)}
-.field input::placeholder{color:var(--muted2)}
-.btn-go{width:100%;background:var(--accent);color:#000;border:none;border-radius:var(--radius);padding:15px;font-family:var(--font);font-size:15px;font-weight:500;cursor:pointer;margin-top:0.75rem;transition:background 0.2s;-webkit-appearance:none}
-.btn-go:active{background:var(--accent2)}
-.setup-note{font-size:11px;color:var(--muted);margin-top:1.25rem;text-align:center;line-height:1.7}
+.field input::placeholder{color:var(--text3)}
+.btn-connect{
+  width:100%;background:var(--accent);color:#fff;border:none;
+  border-radius:14px;padding:17px;font-family:var(--font-tight);
+  font-size:16px;font-weight:700;cursor:pointer;margin-top:0.75rem;
+  transition:background 0.2s;-webkit-appearance:none;letter-spacing:0.01em;
+}
+.btn-connect:active{background:var(--accent2)}
+.setup-note{font-size:11px;color:var(--text3);margin-top:1.5rem;text-align:center;line-height:1.7}
 
-/* ── TOPBAR ── */
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
-.topbar-logo{font-family:var(--mono);font-size:10px;letter-spacing:0.18em;color:var(--accent);text-transform:uppercase}
-.topbar-right{display:flex;align-items:center;gap:10px}
-.phase-pill{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0.06em;background:var(--surface2);padding:4px 10px;border-radius:20px;border:1px solid var(--border2)}
-.icon-btn{background:none;border:1px solid var(--border2);border-radius:var(--radius-sm);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all 0.2s}
-.icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+/* ── MAIN LAYOUT ── */
+#screen-main{padding-bottom:var(--tab-height)}
 
-/* ── METRICS STRIP ── */
-.metrics{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--border);flex-shrink:0}
-.m-cell{padding:10px 8px;text-align:center;position:relative}
-.m-cell:not(:last-child)::after{content:'';position:absolute;right:0;top:25%;height:50%;width:1px;background:var(--border)}
-.m-val{font-family:var(--mono);font-size:19px;font-weight:500;line-height:1;margin-bottom:3px}
-.m-lbl{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase}
-.c-green{color:var(--accent)}
-.c-warn{color:var(--warn)}
-.c-danger{color:var(--danger)}
-.c-muted{color:var(--muted)}
+/* ── STATUS BAR SPACER ── */
+.safe-top{height:env(safe-area-inset-top, 44px);flex-shrink:0;min-height:44px}
 
-/* ── SCROLL AREA ── */
-.scroll-area{flex:1;overflow-y:auto;padding:14px 14px 0;-webkit-overflow-scrolling:touch}
-.scroll-area::-webkit-scrollbar{width:3px}
-.scroll-area::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+/* ── HEADER ── */
+.header{padding:4px 20px 12px;flex-shrink:0}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.header-name{font-family:var(--font-tight);font-size:22px;font-weight:800;letter-spacing:-0.3px}
+.header-sub{font-size:13px;color:var(--text2)}
+.header-right{display:flex;align-items:center;gap:10px}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--accent-dim);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-tight);font-size:13px;font-weight:700;color:var(--accent)}
+.settings-icon{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2)}
+
+/* ── WEEK STRIP ── */
+.week-strip{display:flex;gap:4px;overflow-x:auto;padding:0 20px 4px;flex-shrink:0;-webkit-overflow-scrolling:touch}
+.week-strip::-webkit-scrollbar{display:none}
+.day-pill{flex-shrink:0;width:40px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0 6px;border-radius:12px;cursor:pointer;transition:background 0.2s}
+.day-pill.today{background:var(--accent)}
+.day-pill.rest{opacity:0.4}
+.dp-name{font-size:9px;font-weight:600;letter-spacing:0.08em;color:var(--text3);text-transform:uppercase}
+.day-pill.today .dp-name{color:rgba(255,255,255,0.7)}
+.dp-num{font-family:var(--font-tight);font-size:16px;font-weight:700;color:var(--text)}
+.day-pill.today .dp-num{color:#fff}
+.dp-dot{width:4px;height:4px;border-radius:50%;background:var(--text3)}
+.dp-dot.done{background:var(--green)}
+.dp-dot.today-dot{background:rgba(255,255,255,0.6)}
+.week-divider{height:1px;background:var(--border);margin:12px 20px 0;flex-shrink:0}
+
+/* ── SCROLL ── */
+.scroll{flex:1;overflow-y:auto;padding:16px 16px 0;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{display:none}
+
+/* ── METRICS ROW ── */
+.metrics-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.metric-card{background:var(--card);border-radius:16px;padding:14px 12px;text-align:center;border:1px solid var(--border)}
+.mc-val{font-family:var(--font-tight);font-size:24px;font-weight:800;line-height:1;margin-bottom:4px;letter-spacing:-0.5px}
+.mc-lbl{font-size:10px;font-weight:600;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase}
+.mc-sub{font-size:10px;color:var(--text3);margin-top:2px}
+.c-accent{color:var(--accent)}
+.c-green{color:var(--green)}
+.c-amber{color:var(--amber)}
+.c-red{color:var(--red)}
+.c-muted{color:var(--text2)}
 
 /* ── TODAY CARD ── */
-.today-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:14px;margin-bottom:10px}
-.today-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-.today-meta{flex:1}
-.today-dayname{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
-.today-session{font-size:17px;font-weight:500;line-height:1.2;padding-right:10px}
-.verdict{padding:5px 11px;border-radius:20px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.06em;flex-shrink:0;align-self:flex-start}
-.verdict.go{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(200,240,96,0.25)}
-.verdict.modify{background:rgba(255,170,0,0.12);color:var(--warn);border:1px solid rgba(255,170,0,0.25)}
-.verdict.skip{background:rgba(255,69,69,0.12);color:var(--danger);border:1px solid rgba(255,69,69,0.25)}
-.verdict.pending{background:var(--surface2);color:var(--muted);border:1px solid var(--border2)}
+.today-card{background:var(--card);border-radius:20px;padding:18px;margin-bottom:12px;border:1px solid var(--border);position:relative;overflow:hidden}
+.today-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);border-radius:0}
+.today-inner{padding-left:14px}
+.today-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.today-left{}
+.today-daydate{font-size:11px;font-weight:600;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase;margin-bottom:4px}
+.today-session{font-family:var(--font-tight);font-size:20px;font-weight:800;line-height:1.15;letter-spacing:-0.3px}
+.verdict-badge{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.08em;flex-shrink:0;align-self:flex-start}
+.verdict-badge.go{background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,80,0.3)}
+.verdict-badge.modify{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(255,152,0,0.3)}
+.verdict-badge.skip{background:var(--red-dim);color:var(--red);border:1px solid rgba(244,67,54,0.3)}
+.verdict-badge.pending{background:var(--card2);color:var(--text3);border:1px solid var(--border)}
 
-/* ── WELLNESS ROW ── */
-.wellness{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
-.w-cell{background:var(--surface2);border-radius:var(--radius-sm);padding:8px 10px;text-align:center}
-.w-val{font-family:var(--mono);font-size:14px;font-weight:500;margin-bottom:2px}
-.w-lbl{font-family:var(--mono);font-size:8px;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase}
+/* ── WELLNESS PILLS ── */
+.wellness-row{display:flex;gap:8px;flex-wrap:wrap}
+.w-pill{background:var(--card2);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.w-icon{font-size:14px;flex-shrink:0}
+.w-info{}
+.w-val{font-family:var(--font-tight);font-size:14px;font-weight:700;line-height:1}
+.w-lbl{font-size:9px;font-weight:600;letter-spacing:0.08em;color:var(--text3);text-transform:uppercase;margin-top:1px}
 
-/* ── REPORT AREA ── */
-.report-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:14px;margin-bottom:10px}
-.report-body{font-size:13.5px;line-height:1.8;color:var(--text);white-space:pre-wrap;word-break:break-word}
-.report-placeholder{color:var(--muted);font-size:13px;line-height:1.7;font-style:italic}
-.loading-wrap{display:flex;align-items:center;gap:8px;padding:4px 0}
-.loading-wrap span{font-size:12px;color:var(--muted);font-family:var(--mono)}
-.dots{display:flex;gap:4px}
-.dots i{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:dot 1.2s infinite}
-.dots i:nth-child(2){animation-delay:0.2s}
-.dots i:nth-child(3){animation-delay:0.4s}
-@keyframes dot{0%,60%,100%{opacity:0.2;transform:scale(0.8)}30%{opacity:1;transform:scale(1)}}
+/* ── SECTION HEADER ── */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin:16px 0 10px;padding:0 2px}
+.section-title{font-size:11px;font-weight:700;letter-spacing:0.12em;color:var(--text3);text-transform:uppercase}
+
+/* ── COACH CARD ── */
+.coach-card{background:var(--card);border-radius:20px;padding:18px;margin-bottom:12px;border:1px solid var(--border)}
+.coach-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.coach-avatar{width:32px;height:32px;border-radius:10px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.coach-name{font-size:13px;font-weight:600;color:var(--text)}
+.coach-role{font-size:11px;color:var(--text3)}
+.coach-body{font-size:14px;line-height:1.75;color:var(--text2);white-space:pre-wrap;word-break:break-word}
+.coach-placeholder{font-size:14px;line-height:1.7;color:var(--text3);font-style:italic}
+.loading-row{display:flex;align-items:center;gap:10px}
+.loading-row span{font-size:13px;color:var(--text3)}
+.pulse-dots{display:flex;gap:5px}
+.pulse-dots i{width:6px;height:6px;border-radius:50%;background:var(--accent);display:block;animation:pdot 1.4s infinite}
+.pulse-dots i:nth-child(2){animation-delay:0.2s}
+.pulse-dots i:nth-child(3){animation-delay:0.4s}
+@keyframes pdot{0%,60%,100%{opacity:0.2;transform:scale(0.7)}30%{opacity:1;transform:scale(1)}}
 
 /* ── QUICK ACTIONS ── */
-.qa-row{display:flex;gap:7px;overflow-x:auto;padding:2px 0 8px;-webkit-overflow-scrolling:touch}
-.qa-row::-webkit-scrollbar{display:none}
-.qa-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:7px 14px;font-size:12px;color:var(--muted);cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:var(--font);transition:all 0.15s;-webkit-appearance:none}
-.qa-btn:active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
-
-/* ── INPUT AREA ── */
-.input-wrap{border-top:1px solid var(--border);padding:10px 12px;background:var(--bg);flex-shrink:0;padding-bottom:max(10px, env(safe-area-inset-bottom))}
-.input-row{display:flex;gap:8px;align-items:flex-end}
-.input-box{flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:11px 13px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;resize:none;min-height:44px;max-height:110px;line-height:1.5;transition:border-color 0.2s;-webkit-appearance:none}
-.input-box:focus{border-color:var(--accent)}
-.input-box::placeholder{color:var(--muted2)}
-.mic-btn{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.2s;color:var(--muted);-webkit-appearance:none}
-.mic-btn.active{background:rgba(255,69,69,0.15);border-color:var(--danger);color:var(--danger)}
-.send-btn{background:var(--accent);border:none;border-radius:var(--radius);width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background 0.2s;-webkit-appearance:none}
-.send-btn:active{background:var(--accent2)}
-.send-btn:disabled{background:var(--surface3);cursor:not-allowed}
+.qa-scroll{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;-webkit-overflow-scrolling:touch}
+.qa-scroll::-webkit-scrollbar{display:none}
+.qa-chip{
+  flex-shrink:0;background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:9px 16px;font-size:13px;font-weight:500;
+  color:var(--text2);cursor:pointer;white-space:nowrap;
+  font-family:var(--font);transition:all 0.15s;-webkit-appearance:none;
+}
+.qa-chip:active,.qa-chip.primary{background:var(--accent-dim);border-color:rgba(255,87,34,0.4);color:var(--accent)}
 
 /* ── ERROR ── */
-.err-banner{background:rgba(255,69,69,0.1);border:1px solid rgba(255,69,69,0.25);border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:var(--danger);margin-bottom:10px;line-height:1.5}
+.err-bar{background:rgba(244,67,54,0.1);border:1px solid rgba(244,67,54,0.2);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--red);margin-bottom:12px;line-height:1.5}
 
-/* ── SECTION DIVIDER ── */
-.section-label{font-family:var(--mono);font-size:9px;letter-spacing:0.14em;color:var(--muted2);text-transform:uppercase;margin:4px 2px 6px}
+/* ── INPUT AREA ── */
+.input-area{
+  position:fixed;bottom:var(--tab-height);left:0;right:0;max-width:430px;margin:0 auto;
+  background:var(--bg);border-top:1px solid var(--border);
+  padding:10px 14px 10px;z-index:10;
+}
+.qa-row-input{display:flex;gap:7px;overflow-x:auto;margin-bottom:10px;-webkit-overflow-scrolling:touch}
+.qa-row-input::-webkit-scrollbar{display:none}
+.input-row{display:flex;gap:8px;align-items:flex-end}
+.input-field{
+  flex:1;background:var(--card);border:1px solid var(--border);
+  border-radius:22px;padding:11px 16px;color:var(--text);
+  font-family:var(--font);font-size:15px;outline:none;
+  resize:none;min-height:44px;max-height:100px;line-height:1.5;
+  transition:border-color 0.2s;-webkit-appearance:none;
+}
+.input-field:focus{border-color:rgba(255,87,34,0.5)}
+.input-field::placeholder{color:var(--text3)}
+.mic-btn{
+  width:44px;height:44px;border-radius:22px;background:var(--card);
+  border:1px solid var(--border);display:flex;align-items:center;
+  justify-content:center;cursor:pointer;flex-shrink:0;color:var(--text2);
+  transition:all 0.2s;-webkit-appearance:none;
+}
+.mic-btn.recording{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+.send-btn{
+  width:44px;height:44px;border-radius:22px;background:var(--accent);
+  border:none;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;transition:all 0.2s;-webkit-appearance:none;
+}
+.send-btn:active{background:var(--accent2);transform:scale(0.95)}
+.send-btn:disabled{background:var(--card2);cursor:not-allowed}
+
+/* ── TAB BAR ── */
+.tab-bar{
+  position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;
+  height:var(--tab-height);background:var(--card);border-top:1px solid var(--border);
+  display:flex;align-items:flex-start;padding:8px 0 0;z-index:20;
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 0;opacity:0.4;transition:opacity 0.2s}
+.tab-item.active{opacity:1}
+.tab-item svg{width:22px;height:22px}
+.tab-item.active svg{stroke:var(--accent)}
+.tab-label{font-size:10px;font-weight:600;letter-spacing:0.04em}
+.tab-item.active .tab-label{color:var(--accent)}
+
+/* ── RACE CARD ── */
+.race-card{background:linear-gradient(135deg,#1a0a06 0%,#2d1008 100%);border:1px solid rgba(255,87,34,0.2);border-radius:20px;padding:18px;margin-bottom:12px}
+.race-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.race-label{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase}
+.race-name{font-family:var(--font-tight);font-size:18px;font-weight:800;letter-spacing:-0.3px;margin-top:2px}
+.race-badge{background:var(--accent);color:#fff;font-family:var(--font-tight);font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;letter-spacing:0.04em}
+.race-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rs-item{}
+.rs-val{font-family:var(--font-tight);font-size:16px;font-weight:700;letter-spacing:-0.2px}
+.rs-lbl{font-size:10px;color:var(--text3);margin-top:1px}
+.progress-bar{height:3px;background:rgba(255,255,255,0.1);border-radius:2px;margin:12px 0 0;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.5s ease}
+
+/* ── SPACER ── */
+.scroll-spacer{height:170px}
 </style>
 </head>
 <body>
 
-<!-- SETUP SCREEN -->
+<!-- SETUP -->
 <div class="screen active" id="screen-setup">
-  <div class="s11-logo">Section 11 // Coach</div>
+  <div class="setup-logo">S11 COACH</div>
   <h1 class="setup-h">Your personal<br>running coach.</h1>
-  <p class="setup-sub">Enter your keys to connect. Everything is stored locally on your device — never shared with anyone except Intervals.icu and Anthropic directly.</p>
-
+  <p class="setup-sub">Connect your accounts to get started. All data stays on your device.</p>
   <div class="field">
     <label>Intervals.icu API Key</label>
-    <input type="password" id="icu-key" placeholder="icu_api_..." autocomplete="off" inputmode="text">
+    <input type="text" id="icu-key" placeholder="icu_api_..." autocomplete="off">
   </div>
   <div class="field">
     <label>Anthropic API Key</label>
-    <input type="text" id="ant-key" placeholder="sk-ant-..." autocomplete="off" inputmode="text">
+    <input type="text" id="ant-key" placeholder="sk-ant-..." autocomplete="off">
   </div>
   <div class="field">
     <label>Athlete ID</label>
-    <input type="text" id="athlete-id" placeholder="i580397" value="i580397" autocomplete="off">
+    <input type="text" id="athlete-id" value="i580397" autocomplete="off">
   </div>
-
-  <button class="btn-go" onclick="doSetup()">Connect</button>
-  <p class="setup-note">Keys saved to browser local storage only.<br>Tap "keys" in the app to update anytime.</p>
+  <button class="btn-connect" onclick="doSetup()">Connect</button>
+  <p class="setup-note">Keys saved locally. Never shared with anyone except Intervals.icu and Anthropic.</p>
 </div>
 
-<!-- MAIN SCREEN -->
+<!-- MAIN -->
 <div class="screen" id="screen-main">
+  <div class="safe-top"></div>
 
-  <div class="topbar">
-    <div class="topbar-logo">S11 Coach</div>
-    <div class="topbar-right">
-      <div class="phase-pill" id="phase-pill">Wk 1 · Base</div>
-      <button class="icon-btn" onclick="goToSetup()" title="Settings">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-      </button>
-    </div>
-  </div>
-
-  <div class="metrics">
-    <div class="m-cell">
-      <div class="m-val c-green" id="m-ctl">--</div>
-      <div class="m-lbl">CTL</div>
-    </div>
-    <div class="m-cell">
-      <div class="m-val c-muted" id="m-atl">--</div>
-      <div class="m-lbl">ATL</div>
-    </div>
-    <div class="m-cell">
-      <div class="m-val c-muted" id="m-tsb">--</div>
-      <div class="m-lbl">TSB</div>
-    </div>
-  </div>
-
-  <div class="scroll-area" id="scroll-area">
-
-    <div class="today-card">
-      <div class="today-top">
-        <div class="today-meta">
-          <div class="today-dayname" id="today-dayname">—</div>
-          <div class="today-session" id="today-session">Loading your data...</div>
-        </div>
-        <div class="verdict pending" id="verdict-badge">—</div>
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="header-name">Good morning, Brandt.</div>
+        <div class="header-sub" id="header-sub">Week 1 · Base Phase · 209 days to race</div>
       </div>
-      <div class="wellness" id="wellness-row">
-        <div class="w-cell"><div class="w-val c-muted" id="w-hrv">--</div><div class="w-lbl">HRV</div></div>
-        <div class="w-cell"><div class="w-val c-muted" id="w-rhr">--</div><div class="w-lbl">RHR</div></div>
-        <div class="w-cell"><div class="w-val c-muted" id="w-sleep">--</div><div class="w-lbl">Sleep</div></div>
+      <div class="header-right">
+        <div class="avatar">BD</div>
+        <button class="settings-icon" onclick="goToSetup()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="week-strip" id="week-strip"></div>
+  </div>
+  <div class="week-divider"></div>
+
+  <div class="scroll" id="scroll">
+
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="mc-val c-accent" id="m-ctl">--</div>
+        <div class="mc-lbl">CTL</div>
+        <div class="mc-sub">Fitness</div>
+      </div>
+      <div class="metric-card">
+        <div class="mc-val c-muted" id="m-atl">--</div>
+        <div class="mc-lbl">ATL</div>
+        <div class="mc-sub">Fatigue</div>
+      </div>
+      <div class="metric-card">
+        <div class="mc-val c-muted" id="m-tsb">--</div>
+        <div class="mc-lbl">TSB</div>
+        <div class="mc-sub">Form</div>
+      </div>
+    </div>
+
+    <div class="today-card" id="today-card">
+      <div class="today-inner">
+        <div class="today-top">
+          <div class="today-left">
+            <div class="today-daydate" id="today-daydate">MONDAY · MAY 18</div>
+            <div class="today-session" id="today-session">Easy recovery</div>
+          </div>
+          <div class="verdict-badge pending" id="verdict-badge">--</div>
+        </div>
+        <div class="wellness-row" id="wellness-row">
+          <div class="w-pill">
+            <div class="w-icon">💓</div>
+            <div class="w-info">
+              <div class="w-val c-muted" id="w-hrv">--</div>
+              <div class="w-lbl">HRV</div>
+            </div>
+          </div>
+          <div class="w-pill">
+            <div class="w-icon">❤️</div>
+            <div class="w-info">
+              <div class="w-val c-muted" id="w-rhr">--</div>
+              <div class="w-lbl">RHR</div>
+            </div>
+          </div>
+          <div class="w-pill">
+            <div class="w-icon">🌙</div>
+            <div class="w-info">
+              <div class="w-val c-muted" id="w-sleep">--</div>
+              <div class="w-lbl">Sleep</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
     <div id="err-container"></div>
 
-    <div class="section-label">Coach</div>
-    <div class="report-card" id="report-card">
-      <div class="report-placeholder" id="rp-placeholder">Tap a quick action below or type a question. Start with "Readiness report" to get your Section 11 pre-workout check.</div>
-      <div class="report-body" id="rp-body" style="display:none"></div>
+    <div class="race-card">
+      <div class="race-top">
+        <div>
+          <div class="race-label">Goal Race</div>
+          <div class="race-name">Honolulu Marathon</div>
+        </div>
+        <div class="race-badge">RACE A</div>
+      </div>
+      <div class="race-stats">
+        <div class="rs-item">
+          <div class="rs-val" id="days-to-race">--</div>
+          <div class="rs-lbl">Days out</div>
+        </div>
+        <div class="rs-item">
+          <div class="rs-val">6:29</div>
+          <div class="rs-lbl">Goal pace</div>
+        </div>
+        <div class="rs-item">
+          <div class="rs-val">Sub 2:50</div>
+          <div class="rs-lbl">Target</div>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="block-progress" style="width:3%"></div>
+      </div>
     </div>
 
-    <div style="height:10px"></div>
+    <div class="section-header">
+      <div class="section-title">Coach</div>
+    </div>
+
+    <div class="coach-card" id="coach-card">
+      <div class="coach-header">
+        <div class="coach-avatar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div>
+          <div class="coach-name">Section 11 Coach</div>
+          <div class="coach-role">AI · Evidence-based</div>
+        </div>
+      </div>
+      <div class="coach-placeholder" id="coach-placeholder">Tap a quick action or ask me anything. Start with "Readiness report" for your morning check-in.</div>
+      <div class="coach-body" id="coach-body" style="display:none"></div>
+    </div>
+
+    <div class="scroll-spacer"></div>
   </div>
 
-  <div class="input-wrap">
-    <div class="qa-row">
-      <button class="qa-btn" onclick="quick('readiness')">Readiness report</button>
-      <button class="qa-btn" onclick="quick('post')">Post-workout</button>
-      <button class="qa-btn" onclick="quick('week')">This week</button>
-      <button class="qa-btn" onclick="quick('schedule')">My schedule</button>
-      <button class="qa-btn" onclick="quick('adjust')">Adjust plan</button>
+  <div class="input-area">
+    <div class="qa-row-input">
+      <button class="qa-chip primary" onclick="quick('readiness')">Readiness report</button>
+      <button class="qa-chip" onclick="quick('post')">Post-workout</button>
+      <button class="qa-chip" onclick="quick('week')">This week</button>
+      <button class="qa-chip" onclick="quick('schedule')">My schedule</button>
+      <button class="qa-chip" onclick="quick('adjust')">Adjust plan</button>
     </div>
     <div class="input-row">
-      <button class="mic-btn" id="mic-btn" onclick="toggleMic()" aria-label="Voice input">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      <button class="mic-btn" id="mic-btn" onclick="toggleMic()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
       </button>
-      <textarea class="input-box" id="user-input" placeholder="Ask anything about your training..." rows="1"
-        oninput="onInput(this)" onkeydown="onKey(event)"></textarea>
-      <button class="send-btn" id="send-btn" onclick="send()" disabled aria-label="Send">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      <textarea class="input-field" id="user-input" placeholder="Ask your coach..." rows="1" oninput="onInput(this)" onkeydown="onKey(event)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="send()" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       </button>
     </div>
   </div>
 
+  <div class="tab-bar">
+    <div class="tab-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="tab-label">Today</span>
+    </div>
+    <div class="tab-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span class="tab-label">Plan</span>
+    </div>
+    <div class="tab-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span class="tab-label">Load</span>
+    </div>
+    <div class="tab-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="tab-label">Profile</span>
+    </div>
+  </div>
 </div>
 
 <script>
-// ── CONSTANTS ──
 const ATHLETE_ID_DEFAULT = 'i580397';
 const BLOCK_START = new Date('2026-05-18');
 const RACE_DATE = new Date('2026-12-13');
 
 const DAY_SESSIONS = {
-  0: { name: 'Long run', detail: 'Primary long run — Z1-Z2, build distance, conversational effort' },
-  1: { name: 'Easy recovery', detail: 'Day after long run — Z1-Z2 only, fully conversational, no extras' },
-  2: { name: 'Run club — 4mi Diamond Head', detail: 'Sacred — 7:00-7:30/mi push, fixed 4mi, nothing extra' },
-  3: { name: 'Rest day', detail: 'Full rest — no running, no extras' },
-  4: { name: 'Quality day', detail: 'Structured Thursday session — see Section 11 for today\'s rotation' },
-  5: { name: 'Easy run', detail: 'Z1-Z2 only — builds from 5mi (Base) to 8mi (Peak)' },
-  6: { name: 'Rest day', detail: 'Full rest — no running, no extras' }
+  0:{name:'Long run',accent:'#ff5722'},
+  1:{name:'Easy recovery',accent:'#4caf50'},
+  2:{name:'Run club · 4mi',accent:'#ff9800'},
+  3:{name:'Rest day',accent:'#555'},
+  4:{name:'Quality day',accent:'#2196f3'},
+  5:{name:'Easy run',accent:'#4caf50'},
+  6:{name:'Rest day',accent:'#555'}
 };
 
-const SYSTEM_PROMPT = `You are Brandt Dixon's personal endurance running coach operating under Section 11 v11.39 protocol.
+const SYSTEM = `You are Brandt Dixon's personal endurance running coach operating under Section 11 v11.39 protocol.
 
-ATHLETE PROFILE:
-Name: Brandt Dixon, Age: 29 (turns 30 in 2026), Location: Oahu Hawaii
-Goal: Sub-2:50 marathon, Honolulu December 13 2026 (RACE_A)
-Tune-up: Kauai Half Marathon September 6 2026 (RACE_B) — run all out
-LT Pace: 7:16/mi, VO2max: 53, LT HR: 182bpm, Max HR: 204bpm
-Background: College soccer SFSU — high training tolerance, strong aerobic responder
-Current Block: Week 1 of 30-week base-to-peak block (started May 18 2026)
+ATHLETE: Brandt Dixon, 29yo, Oahu Hawaii. Sub-2:50 marathon December 13 2026 (RACE_A). Kauai Half September 6 2026 (RACE_B) all out.
+LT: 7:16/mi, VO2max: 53, LT HR: 182bpm, Max HR: 204bpm. College soccer SFSU background — high training tolerance.
+Block: Week 1 of 30 base-to-peak (May 18 2026). CTL peak target 87.
 
-FIXED WEEKLY SCHEDULE:
-Sunday — Long run (builds 11mi to 22mi)
-Monday — Easy recovery Z1-Z2 only, day after long run
-Tuesday — Run club 4mi Diamond Head loop 7:00-7:30/mi, SACRED, never modify, never add extras
-Wednesday — Full rest, no exceptions
-Thursday — Quality day (structured session, rotates by phase)
-Friday — Easy Z1-Z2 (builds 5mi Base to 8mi Peak)
-Saturday — Full rest, no exceptions
+SCHEDULE: Sun=Long run | Mon=Easy Z1-Z2 | Tue=Run club 4mi Diamond Head 7:00-7:30/mi SACRED NEVER MODIFY | Wed=REST | Thu=Quality | Fri=Easy Z1-Z2 | Sat=REST
 
-THURSDAY QUALITY ROTATION (Base wk1-8):
-wk1: steady state | wk2: tempo | wk3: hills | wk4: easy tempo (recovery week)
-wk5: threshold | wk6: hills | wk7: threshold | wk8: easy tempo (recovery week)
+THURSDAY BASE ROTATION: wk1 steady state | wk2 tempo | wk3 hills | wk4 easy tempo | wk5 threshold | wk6 hills | wk7 threshold | wk8 easy tempo
 
-PACE ZONES (from 7:16 LT):
-Z1: 9:23+/mi | Z2: 8:17-9:22 | Z3: 7:42-8:16 (grey zone, minimize)
-Z4: 7:16-7:41 (threshold) | Z5a: 7:02-7:15 | Z6: 6:31-7:01 | Z7: sub 6:30
+ZONES: Z1 9:23+/mi | Z2 8:17-9:22 | Z3 7:42-8:16 GREY ZONE MINIMIZE | Z4 7:16-7:41 threshold | Z5a 7:02-7:15 | Z6 6:31-7:01 | Z7 sub 6:30
 
-TRAINING PACES BY PHASE:
-Base (wk1-8): Easy 9:00-9:30, Thursday 7:45-8:15 steady/tempo, Long run 9:00-9:30
-Build 1 (wk9-16): Easy 8:30-9:00, Thursday 7:00-7:16 threshold/intervals, Long 8:30-9:00
-Build 2 (wk17-24): Easy 8:00-8:30, Thursday 6:45-7:05 MP intervals, Long 8:00-8:30 w MP finish
-Peak (wk25-28): Easy 7:45-8:15, Thursday 6:30-6:50 race sim, Long 7:45-8:00 w MP finish
-Taper (wk29-30): Easy 8:00-8:30, Thursday 6:29 MP strides
+RULES: No virtual math. TSB -10 to -30 is NORMAL do not flag. Hawaii heat = pace not HR. Tuesday 4mi always sacred. Deload: HRV drop >20% OR RHR +5bpm OR Feel 4+. Two triggers = full deload. 80/20 polarization.
 
-VOLUME TARGETS:
-Base: 32-42mpw, CTL 31-46
-Build 1: 42-55mpw, CTL 46-66
-Build 2: 52-65mpw, CTL 66-83
-Peak: 62-68mpw, CTL 83-87
-Taper: 42mi down to race, CTL 87-78
+FORMAT: Pre-workout: GO or MODIFY or SKIP on first line alone. Then load context, wellness, session details. Post-workout: line by line metrics, weekly totals, coach note. No bullets for session data. No em dashes. Conversational.`;
 
-SECTION 11 RULES:
-- No virtual math — use actual data values provided
-- TSB -10 to -30 is normal training load, do NOT flag it or recommend recovery
-- Hawaii heat is a standing modifier — always interpret effort by pace not HR on warm days
-- Tuesday run club is always 4mi, never modify under any circumstances
-- Auto-deload triggers: HRV drop more than 20% vs 7d baseline OR RHR plus 5bpm vs baseline OR athlete Feel score 4 or higher
-- Two or more triggers = recommend full deload week
-- Week 16 Kauai Half — run all out, no pacing strategy
-- 80/20 polarization — Z1-Z2 must be 75%+ of total moving time
+let history = [], athleteData = null, busy = false, recognition = null, isRecording = false;
 
-OUTPUT FORMAT:
-- Pre-workout: readiness check, load context, today's session, Go/Modify/Skip on first line
-- Post-workout: session metrics line by line, weekly totals, coach note
-- Adaptive schedule changes: show revised week clearly
-- No bullet points for session data, use line by line format
-- No em dashes
-- Conversational not corporate, brief when metrics normal, detailed when thresholds breached
-- For readiness reports, put GO or MODIFY or SKIP alone on the very first line`;
+function keys(){return{icu:localStorage.getItem('s11_icu')||'',ant:localStorage.getItem('s11_ant')||'',id:localStorage.getItem('s11_id')||ATHLETE_ID_DEFAULT}}
 
-// ── STATE ──
-let history = [];
-let athleteData = null;
-let busy = false;
-let recognition = null;
-let isRecording = false;
-
-// ── KEYS ──
-function keys() {
-  return {
-    icu: localStorage.getItem('s11_icu') || '',
-    ant: localStorage.getItem('s11_ant') || '',
-    id: localStorage.getItem('s11_id') || ATHLETE_ID_DEFAULT
-  };
-}
-
-// ── SETUP ──
-function doSetup() {
-  const icu = document.getElementById('icu-key').value.trim();
-  const ant = document.getElementById('ant-key').value.trim();
-  const id = document.getElementById('athlete-id').value.trim() || ATHLETE_ID_DEFAULT;
-  if (!icu || !ant) { alert('Please enter both API keys.'); return; }
-  localStorage.setItem('s11_icu', icu);
-  localStorage.setItem('s11_ant', ant);
-  localStorage.setItem('s11_id', id);
+function doSetup(){
+  const icu=document.getElementById('icu-key').value.trim();
+  const ant=document.getElementById('ant-key').value.trim();
+  const id=document.getElementById('athlete-id').value.trim()||ATHLETE_ID_DEFAULT;
+  if(!icu||!ant){alert('Please enter both API keys.');return}
+  localStorage.setItem('s11_icu',icu);localStorage.setItem('s11_ant',ant);localStorage.setItem('s11_id',id);
   showMain();
 }
 
-function goToSetup() {
-  const k = keys();
-  document.getElementById('icu-key').value = k.icu;
-  document.getElementById('ant-key').value = k.ant;
-  document.getElementById('athlete-id').value = k.id;
+function goToSetup(){
+  const k=keys();
+  document.getElementById('icu-key').value=k.icu;
+  document.getElementById('ant-key').value=k.ant;
+  document.getElementById('athlete-id').value=k.id;
   document.getElementById('screen-main').classList.remove('active');
   document.getElementById('screen-setup').classList.add('active');
 }
 
-function showMain() {
+function showMain(){
   document.getElementById('screen-setup').classList.remove('active');
   document.getElementById('screen-main').classList.add('active');
-  initMain();
+  init();
 }
 
-// ── INIT ──
-function initMain() {
-  updateTodayCard();
-  updateWeekBadge();
+function init(){
+  updateHeader();
+  buildWeekStrip();
+  updateRaceCard();
   fetchData();
 }
 
-function updateTodayCard() {
-  const now = new Date();
-  const dow = now.getDay();
-  const session = DAY_SESSIONS[dow];
-  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  document.getElementById('today-dayname').textContent = dayNames[dow].toUpperCase() + ' · ' + dateStr;
-  document.getElementById('today-session').textContent = session.name;
+function updateHeader(){
+  const now=new Date();
+  const hrs=now.getHours();
+  const greet=hrs<12?'Good morning':hrs<17?'Good afternoon':'Good evening';
+  document.querySelector('.header-name').textContent=greet+', Brandt.';
+  const msPerWeek=7*24*60*60*1000;
+  const weekNum=Math.max(1,Math.ceil((now-BLOCK_START)/msPerWeek)+1);
+  const daysToRace=Math.ceil((RACE_DATE-now)/864e5);
+  let phase='Base';
+  if(weekNum>28)phase='Taper';else if(weekNum>24)phase='Peak';else if(weekNum>16)phase='Build 2';else if(weekNum>8)phase='Build 1';
+  document.getElementById('header-sub').textContent=`Week ${weekNum} · ${phase} Phase · ${daysToRace} days to race`;
+
+  const today=now.getDay();
+  const sess=DAY_SESSIONS[today];
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('today-daydate').textContent=days[today].toUpperCase()+' · '+months[now.getMonth()]+' '+now.getDate();
+  document.getElementById('today-session').textContent=sess.name;
+  document.querySelector('.today-card::before');
+  const tc=document.getElementById('today-card');
+  tc.style.setProperty('--session-color',sess.accent);
+  tc.querySelector('.today-card::before');
+  // Set left bar color via inline style on pseudo-element workaround
+  tc.style.borderLeftColor=sess.accent;
+  tc.style.borderLeftWidth='4px';
+  tc.style.borderLeftStyle='solid';
+  tc.style.paddingLeft='14px';
+  tc.querySelector('.today-inner').style.paddingLeft='0';
 }
 
-function updateWeekBadge() {
-  const now = new Date();
-  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
-  const weekNum = Math.max(1, Math.ceil((now - BLOCK_START) / msPerWeek) + 1);
-  let phase = 'Base';
-  if (weekNum > 28) phase = 'Taper';
-  else if (weekNum > 24) phase = 'Peak';
-  else if (weekNum > 16) phase = 'Build 2';
-  else if (weekNum > 8) phase = 'Build 1';
-  document.getElementById('phase-pill').textContent = 'Wk ' + weekNum + ' · ' + phase;
-}
-
-// ── DATA FETCH ──
-async function fetchData() {
-  const k = keys();
-  const today = new Date().toISOString().split('T')[0];
-  const ago = new Date(Date.now() - 14 * 864e5).toISOString().split('T')[0];
-  const authHeader = 'Basic ' + btoa('API_KEY:' + k.icu);
-
-  try {
-    const r = await fetch(
-      `https://intervals.icu/api/v1/athlete/${k.id}/wellness?oldest=${ago}&newest=${today}`,
-      { headers: { 'Authorization': authHeader, 'Accept': 'application/json' } }
-    );
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const data = await r.json();
-    const latest = data[data.length - 1] || {};
-
-    const ctl = latest.ctl ?? latest.ctlLoad ?? null;
-    const atl = latest.atl ?? latest.atlLoad ?? null;
-    const tsb = (ctl != null && atl != null) ? (ctl - atl) : null;
-    const hrv = latest.hrv ?? latest.hrvSdnn ?? null;
-    const rhr = latest.restingHR ?? latest.hr ?? null;
-    const sleepH = latest.sleepSecs ? (latest.sleepSecs / 3600) : null;
-
-    athleteData = { ctl, atl, tsb, hrv, rhr, sleepH, today, raw: latest };
-
-    setMetric('m-ctl', ctl, v => v.toFixed(1), v => v > 25 ? 'c-green' : 'c-muted');
-    setMetric('m-atl', atl, v => v.toFixed(1), v => v > (ctl || 0) * 1.3 ? 'c-warn' : 'c-muted');
-    setMetric('m-tsb', tsb, v => (v > 0 ? '+' : '') + v.toFixed(1), v => v < -35 ? 'c-danger' : v < -10 ? 'c-warn' : 'c-green');
-
-    setWellness('w-hrv', hrv, v => Math.round(v), v => v > 55 ? 'c-green' : v > 42 ? 'c-muted' : 'c-warn');
-    setWellness('w-rhr', rhr, v => Math.round(v) + ' bpm', v => v < 55 ? 'c-green' : v < 65 ? 'c-muted' : 'c-warn');
-    setWellness('w-sleep', sleepH, v => v.toFixed(1) + 'h', v => v >= 7 ? 'c-green' : v >= 6 ? 'c-muted' : 'c-warn');
-
-  } catch(e) {
-    showErr('Could not load Intervals.icu data: ' + e.message + '. Check your API key in settings.');
-    athleteData = { ctl: null, atl: null, tsb: null, hrv: null, rhr: null, sleepH: null, today, raw: {} };
+function buildWeekStrip(){
+  const now=new Date();
+  const dow=now.getDay();
+  const strip=document.getElementById('week-strip');
+  strip.innerHTML='';
+  const dayNames=['S','M','T','W','T','F','S'];
+  for(let i=0;i<7;i++){
+    const d=new Date(now);d.setDate(now.getDate()-dow+i);
+    const isToday=i===dow;
+    const isRest=i===3||i===6;
+    const div=document.createElement('div');
+    div.className='day-pill'+(isToday?' today':'')+(isRest?' rest':'');
+    div.innerHTML=`<div class="dp-name">${dayNames[i]}</div><div class="dp-num">${d.getDate()}</div><div class="dp-dot${isToday?' today-dot':i<dow?' done':''}"></div>`;
+    strip.appendChild(div);
   }
 }
 
-function setMetric(id, val, fmt, colorFn) {
-  const el = document.getElementById(id);
-  if (val == null) { el.textContent = '--'; el.className = 'm-val c-muted'; return; }
-  el.textContent = fmt(val);
-  el.className = 'm-val ' + colorFn(val);
+function updateRaceCard(){
+  const now=new Date();
+  const days=Math.ceil((RACE_DATE-now)/864e5);
+  document.getElementById('days-to-race').textContent=days;
+  const totalDays=Math.ceil((RACE_DATE-BLOCK_START)/864e5);
+  const elapsed=Math.ceil((now-BLOCK_START)/864e5);
+  const pct=Math.min(100,Math.max(0,(elapsed/totalDays)*100));
+  document.getElementById('block-progress').style.width=pct+'%';
 }
 
-function setWellness(id, val, fmt, colorFn) {
-  const el = document.getElementById(id);
-  if (val == null) { el.textContent = '--'; el.className = 'w-val c-muted'; return; }
-  el.textContent = fmt(val);
-  el.className = 'w-val ' + colorFn(val);
-}
-
-function showErr(msg) {
-  document.getElementById('err-container').innerHTML =
-    '<div class="err-banner">' + msg + '</div>';
-}
-
-// ── CONTEXT BUILDER ──
-function buildContext() {
-  const now = new Date();
-  const dow = now.getDay();
-  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
-  const weekNum = Math.max(1, Math.ceil((now - BLOCK_START) / msPerWeek) + 1);
-  const daysToRace = Math.ceil((RACE_DATE - now) / 864e5);
-  const session = DAY_SESSIONS[dow];
-
-  let ctx = `TODAY: ${dayNames[dow]} ${now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
-WEEK: ${weekNum} of 30 (${daysToRace} days to Honolulu Marathon)
-TODAY'S SESSION: ${session.name} — ${session.detail}\n`;
-
-  if (athleteData) {
-    const { ctl, atl, tsb, hrv, rhr, sleepH } = athleteData;
-    ctx += `\nLIVE INTERVALS.ICU DATA:
-CTL: ${ctl != null ? ctl.toFixed(1) : 'unavailable'}
-ATL: ${atl != null ? atl.toFixed(1) : 'unavailable'}
-TSB: ${tsb != null ? tsb.toFixed(1) : 'unavailable'}
-ACWR: ${(ctl && atl) ? (atl/ctl).toFixed(2) : 'unavailable'}
-HRV: ${hrv != null ? Math.round(hrv) + ' ms' : 'not yet recorded (HRV activates after 3-5 nights of watch sleep)'}
-Resting HR: ${rhr != null ? Math.round(rhr) + ' bpm' : 'not yet recorded'}
-Sleep: ${sleepH != null ? sleepH.toFixed(1) + ' hrs' : 'not yet recorded'}`;
-  } else {
-    ctx += '\nLIVE DATA: unavailable — using dossier baseline values';
+async function fetchData(){
+  const k=keys();
+  const today=new Date().toISOString().split('T')[0];
+  const ago=new Date(Date.now()-14*864e5).toISOString().split('T')[0];
+  try{
+    const r=await fetch(`https://intervals.icu/api/v1/athlete/${k.id}/wellness?oldest=${ago}&newest=${today}`,{headers:{'Authorization':'Basic '+btoa('API_KEY:'+k.icu),'Accept':'application/json'}});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    const latest=data[data.length-1]||{};
+    const ctl=latest.ctl??latest.ctlLoad??null;
+    const atl=latest.atl??latest.atlLoad??null;
+    const tsb=(ctl!=null&&atl!=null)?(ctl-atl):null;
+    const hrv=latest.hrv??latest.hrvSdnn??null;
+    const rhr=latest.restingHR??latest.hr??null;
+    const sleepH=latest.sleepSecs?(latest.sleepSecs/3600):null;
+    athleteData={ctl,atl,tsb,hrv,rhr,sleepH,today};
+    setM('m-ctl',ctl,v=>v.toFixed(1),v=>v>25?'c-accent':'c-muted');
+    setM('m-atl',atl,v=>v.toFixed(1),v=>atl>(ctl||0)*1.3?'c-amber':'c-muted');
+    setM('m-tsb',tsb,v=>(v>0?'+':'')+v.toFixed(1),v=>v<-35?'c-red':v>5?'c-green':'c-muted');
+    setW('w-hrv',hrv,v=>Math.round(v)+'ms',v=>v>55?'c-green':v>42?'c-muted':'c-amber');
+    setW('w-rhr',rhr,v=>Math.round(v)+' bpm',v=>v<55?'c-green':v<65?'c-muted':'c-amber');
+    setW('w-sleep',sleepH,v=>v.toFixed(1)+'h',v=>v>=7?'c-green':v>=6?'c-muted':'c-amber');
+  }catch(e){
+    document.getElementById('err-container').innerHTML='<div class="err-bar">Could not load Intervals.icu data: '+e.message+'</div>';
+    athleteData={ctl:null,atl:null,tsb:null,hrv:null,rhr:null,sleepH:null,today};
   }
+}
 
+function setM(id,val,fmt,colorFn){
+  const el=document.getElementById(id);
+  if(val==null){el.textContent='--';el.className='mc-val c-muted';return}
+  el.textContent=fmt(val);el.className='mc-val '+colorFn(val);
+}
+function setW(id,val,fmt,colorFn){
+  const el=document.getElementById(id);
+  if(val==null){el.textContent='--';el.className='w-val c-muted';return}
+  el.textContent=fmt(val);el.className='w-val '+colorFn(val);
+}
+
+function buildCtx(){
+  const now=new Date();
+  const dow=now.getDay();
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const msPerWeek=7*24*60*60*1000;
+  const weekNum=Math.max(1,Math.ceil((now-BLOCK_START)/msPerWeek)+1);
+  const daysToRace=Math.ceil((RACE_DATE-now)/864e5);
+  const sess=DAY_SESSIONS[dow];
+  let ctx=`TODAY: ${days[dow]} ${now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}\nWEEK: ${weekNum} of 30 (${daysToRace} days to Honolulu Marathon)\nTODAY SESSION: ${sess.name}\n`;
+  if(athleteData){
+    const{ctl,atl,tsb,hrv,rhr,sleepH}=athleteData;
+    ctx+=`\nLIVE DATA:\nCTL: ${ctl!=null?ctl.toFixed(1):'unavailable'}\nATL: ${atl!=null?atl.toFixed(1):'unavailable'}\nTSB: ${tsb!=null?tsb.toFixed(1):'unavailable'}\nACWR: ${(ctl&&atl)?(atl/ctl).toFixed(2):'unavailable'}\nHRV: ${hrv!=null?Math.round(hrv)+' ms':'not recorded'}\nRHR: ${rhr!=null?Math.round(rhr)+' bpm':'not recorded'}\nSleep: ${sleepH!=null?sleepH.toFixed(1)+' hrs':'not recorded'}`;
+  }
   return ctx;
 }
 
-// ── SEND ──
-async function send(override) {
-  const inputEl = document.getElementById('user-input');
-  const text = override || inputEl.value.trim();
-  if (!text || busy) return;
-
-  const k = keys();
-  if (!k.ant) { goToSetup(); return; }
-
-  busy = true;
-  inputEl.value = '';
-  inputEl.style.height = 'auto';
-  document.getElementById('send-btn').disabled = true;
-
-  const fullMsg = buildContext() + '\n\nATHLETE: ' + text;
-  history.push({ role: 'user', content: fullMsg });
-
-  const placeholder = document.getElementById('rp-placeholder');
-  const body = document.getElementById('rp-body');
-  placeholder.style.display = 'none';
-  body.style.display = 'block';
-  body.innerHTML = '<div class="loading-wrap"><div class="dots"><i></i><i></i><i></i></div><span>Thinking...</span></div>';
-
-  scrollToBottom();
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': k.ant,
-        'anthropic-version': '2023-06-01',
-        'anthropic-beta': 'messages-2023-12-15',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5',
-        max_tokens: 1024,
-        system: SYSTEM_PROMPT,
-        messages: history
-      })
+async function send(override){
+  const inputEl=document.getElementById('user-input');
+  const text=override||inputEl.value.trim();
+  if(!text||busy)return;
+  const k=keys();if(!k.ant){goToSetup();return}
+  busy=true;inputEl.value='';inputEl.style.height='auto';
+  document.getElementById('send-btn').disabled=true;
+  const fullMsg=buildCtx()+'\n\nATHLETE: '+text;
+  history.push({role:'user',content:fullMsg});
+  const placeholder=document.getElementById('coach-placeholder');
+  const body=document.getElementById('coach-body');
+  placeholder.style.display='none';body.style.display='block';
+  body.innerHTML='<div class="loading-row"><div class="pulse-dots"><i></i><i></i><i></i></div><span>Thinking...</span></div>';
+  document.getElementById('scroll').scrollTo({top:9999,behavior:'smooth'});
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':k.ant,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5',max_tokens:1024,system:SYSTEM,messages:history})
     });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err?.error?.message || 'API error ' + res.status);
-    }
-
-    const data = await res.json();
-    const reply = data.content?.[0]?.text || 'No response received.';
-    history.push({ role: 'assistant', content: reply });
-
-    body.textContent = reply;
-    updateVerdictFromReply(reply);
-
-  } catch(e) {
-    body.textContent = 'Error: ' + e.message;
-    if (e.message.includes('401') || e.message.includes('403')) {
-      showErr('Anthropic API key issue — tap the settings icon to update.');
-    }
+    if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error((err?.error?.message||'API error '+res.status))}
+    const data=await res.json();
+    const reply=data.content?.[0]?.text||'No response.';
+    history.push({role:'assistant',content:reply});
+    body.textContent=reply;
+    const first=reply.trim().split('\n')[0].toUpperCase();
+    const badge=document.getElementById('verdict-badge');
+    if(first.startsWith('GO')){badge.textContent='GO';badge.className='verdict-badge go'}
+    else if(first.startsWith('MODIFY')){badge.textContent='MODIFY';badge.className='verdict-badge modify'}
+    else if(first.startsWith('SKIP')){badge.textContent='SKIP';badge.className='verdict-badge skip'}
+  }catch(e){
+    body.textContent='Error: '+e.message;
     history.pop();
   }
-
-  busy = false;
-  document.getElementById('send-btn').disabled = false;
-  scrollToBottom();
+  busy=false;document.getElementById('send-btn').disabled=false;
+  document.getElementById('scroll').scrollTo({top:9999,behavior:'smooth'});
 }
 
-function updateVerdictFromReply(reply) {
-  const first = reply.trim().split('\n')[0].toUpperCase();
-  const badge = document.getElementById('verdict-badge');
-  if (first.startsWith('GO')) {
-    badge.textContent = 'GO'; badge.className = 'verdict go';
-  } else if (first.startsWith('MODIFY')) {
-    badge.textContent = 'MODIFY'; badge.className = 'verdict modify';
-  } else if (first.startsWith('SKIP')) {
-    badge.textContent = 'SKIP'; badge.className = 'verdict skip';
-  }
-}
-
-// ── QUICK ACTIONS ──
-function quick(type) {
-  const map = {
-    readiness: 'Give me my full Section 11 pre-workout readiness report for today. Include load context, wellness check, today\'s planned session details, and your Go/Modify/Skip verdict on the first line.',
-    post: 'I just finished a workout. Ask me what I need to tell you, then give me the full Section 11 post-workout report.',
-    week: 'Give me a summary of my training this week — sessions completed, load progression, polarization, and how I\'m tracking against the Base phase plan.',
-    schedule: 'Walk me through my planned sessions for the next 7 days based on where I am in the 30-week block.',
-    adjust: 'I need to adjust my training plan. Ask me what\'s going on — injury, life schedule, fatigue, travel — and update the plan accordingly using Section 11 logic.'
+function quick(type){
+  const map={
+    readiness:'Give me my full Section 11 pre-workout readiness report for today. Include load context, wellness check, today session details, and your Go/Modify/Skip verdict on the first line.',
+    post:'I just finished a workout. Ask me what you need, then give me the full Section 11 post-workout report.',
+    week:'Give me a summary of my training this week — sessions, load progression, polarization, tracking vs Base phase plan.',
+    schedule:'Walk me through my planned sessions for the next 7 days based on where I am in the 30-week block.',
+    adjust:'I need to adjust my training plan. Ask me what is going on — injury, life schedule, fatigue, travel — then update using Section 11 logic.'
   };
   send(map[type]);
 }
 
-// ── INPUT HANDLERS ──
-function onInput(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 110) + 'px';
-  document.getElementById('send-btn').disabled = el.value.trim().length === 0 || busy;
+function onInput(el){
+  el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';
+  document.getElementById('send-btn').disabled=el.value.trim().length===0||busy;
 }
+function onKey(e){if(e.key==='Enter'&&!e.shiftKey&&window.innerWidth>600){e.preventDefault();send()}}
 
-function onKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 600) {
-    e.preventDefault();
-    send();
-  }
-}
-
-// ── VOICE ──
-function toggleMic() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { alert('Voice input not supported in this browser. Try Chrome or Safari.'); return; }
-
-  const btn = document.getElementById('mic-btn');
-  const input = document.getElementById('user-input');
-
-  if (isRecording) {
-    recognition?.stop();
-    return;
-  }
-
-  recognition = new SR();
-  recognition.continuous = false;
-  recognition.interimResults = true;
-  recognition.lang = 'en-US';
-
-  recognition.onstart = () => {
-    isRecording = true;
-    btn.classList.add('active');
-    input.placeholder = 'Listening...';
-  };
-
-  recognition.onresult = (e) => {
-    const t = Array.from(e.results).map(r => r[0].transcript).join('');
-    input.value = t;
-    onInput(input);
-  };
-
-  recognition.onend = () => {
-    isRecording = false;
-    btn.classList.remove('active');
-    input.placeholder = 'Ask anything about your training...';
-    if (input.value.trim()) send();
-  };
-
-  recognition.onerror = () => {
-    isRecording = false;
-    btn.classList.remove('active');
-    input.placeholder = 'Ask anything about your training...';
-  };
-
+function toggleMic(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert('Voice input not supported. Try Chrome or Safari.');return}
+  const btn=document.getElementById('mic-btn');
+  const input=document.getElementById('user-input');
+  if(isRecording){recognition?.stop();return}
+  recognition=new SR();recognition.continuous=false;recognition.interimResults=true;recognition.lang='en-US';
+  recognition.onstart=()=>{isRecording=true;btn.classList.add('recording');input.placeholder='Listening...'};
+  recognition.onresult=(e)=>{const t=Array.from(e.results).map(r=>r[0].transcript).join('');input.value=t;onInput(input)};
+  recognition.onend=()=>{isRecording=false;btn.classList.remove('recording');input.placeholder='Ask your coach...';if(input.value.trim())send()};
+  recognition.onerror=()=>{isRecording=false;btn.classList.remove('recording');input.placeholder='Ask your coach...'};
   recognition.start();
 }
 
-// ── UTILS ──
-function scrollToBottom() {
-  const sa = document.getElementById('scroll-area');
-  setTimeout(() => sa.scrollTo({ top: sa.scrollHeight, behavior: 'smooth' }), 50);
-}
-
-// ── BOOT ──
-window.addEventListener('load', () => {
-  const k = keys();
-  if (k.icu && k.ant) {
-    showMain();
-  }
+window.addEventListener('load',()=>{
+  // Pre-populate setup fields from saved keys
+  const saved=keys();
+  if(saved.icu)document.getElementById('icu-key').value=saved.icu;
+  if(saved.ant)document.getElementById('ant-key').value=saved.ant;
+  if(saved.id)document.getElementById('athlete-id').value=saved.id;
+  const k=keys();
+  if(k.icu&&k.ant)showMain();
 });
 </script>
 </body>
