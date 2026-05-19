@@ -769,22 +769,22 @@ function explainMetric(type){
   val.textContent = info.value;
   text.textContent = info.text;
   modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-  // iOS scroll fix
-  const ms = document.getElementById('modal-scroll');
-  let startY = 0;
-  ms.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, {passive:true});
-  ms.addEventListener('touchmove', e => {
-    const dy = startY - e.touches[0].clientY;
-    const atTop = ms.scrollTop === 0 && dy < 0;
-    const atBottom = ms.scrollTop + ms.clientHeight >= ms.scrollHeight && dy > 0;
-    if (!atTop && !atBottom) e.stopPropagation();
-  }, {passive:true});
+  // iOS fix: freeze background scroll position
+  const scrollY = document.getElementById('scroll').scrollTop;
+  document.body.style.position = 'fixed';
+  document.body.style.top = '-' + scrollY + 'px';
+  document.body.style.width = '100%';
+  document.body.dataset.scrollY = scrollY;
 }
 
 function closeModal(){
   document.getElementById('metric-modal').style.display = 'none';
-  document.body.style.overflow = '';
+  // Restore background scroll position
+  const scrollY = document.body.dataset.scrollY || 0;
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.width = '';
+  document.getElementById('scroll').scrollTop = parseInt(scrollY);
 }
 
 
