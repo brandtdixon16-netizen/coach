@@ -836,6 +836,80 @@ function formatPace(movingTimeSecs, distanceM) {
   return `${mins}:${secs}`;
 }
 
+
+// ── AUTO VERDICT ──
+async function computeAutoVerdict() {
+  const k = keys();
+  if (!k.ant || !athleteData) return;
+
+  const { ctl, atl, tsb, hrv, rhr, sleepH } = athleteData;
+  const now = new Date();
+  const dow = now.getDay();
+  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+  const weekNum = Math.max(1, Math.ceil((now - BLOCK_START) / msPerWeek) + 1);
+  const sess = DAY_SESSIONS[dow];
+
+  // Rest days are always GO
+  if (dow === 3 || dow === 6) {
+    setVerdict('go', 'REST');
+    return;
+  }
+
+  // Build a concise readiness prompt
+  const prompt = `Section 11 readiness check. Reply with ONLY one of these three words on the first line: GO, MODIFY, or SKIP. Then one sentence explaining why.
+
+Data:
+Day: ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dow]}, Week ${weekNum} of 30
+Session: ${sess.name}
+CTL: ${ctl != null ? ctl.toFixed(1) : 'unknown'}
+ATL: ${atl != null ? atl.toFixed(1) : 'unknown'}
+TSB: ${tsb != null ? tsb.toFixed(1) : 'unknown'}
+HRV: ${hrv != null ? Math.round(hrv) + 'ms' : 'not recorded'}
+Resting HR: ${rhr != null ? Math.round(rhr) + 'bpm' : 'not recorded'}
+Sleep: ${sleepH != null ? sleepH.toFixed(1) + 'hrs' : 'not recorded'}
+Last run: ${athleteData.lastRun ? athleteData.lastRun.distMi + 'mi' : 'unknown'}
+
+Rules: TSB -10 to -30 is normal, do not flag. Tuesday 4mi run club is always GO. Hawaii heat standing modifier. HRV drop >20% vs baseline OR RHR +5bpm vs baseline = deload trigger.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': k.ant,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5',
+        max_tokens: 60,
+        system: 'You are a Section 11 endurance running coach. Be extremely brief.',
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!res.ok) return;
+    const data = await res.json();
+    const reply = data.content?.[0]?.text?.trim() || '';
+    const first = reply.split('
+')[0].toUpperCase().trim();
+
+    if (first === 'GO') setVerdict('go', 'GO');
+    else if (first.startsWith('MODIFY')) setVerdict('modify', 'MODIFY');
+    else if (first.startsWith('SKIP')) setVerdict('skip', 'SKIP');
+
+  } catch(e) {
+    console.log('Auto verdict failed:', e.message);
+  }
+}
+
+function setVerdict(type, label) {
+  const badge = document.getElementById('verdict-badge');
+  if (!badge) return;
+  badge.textContent = label;
+  badge.className = 'verdict-badge ' + type;
+}
+
 // ── FUELING PLAN ──
 function buildFuelingPlan() {
   const now = new Date();
