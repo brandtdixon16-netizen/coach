@@ -588,7 +588,7 @@ async function fetchData(){
   const yesterday=new Date(Date.now()-864e5).toISOString().split('T')[0];
   const ago=new Date(Date.now()-14*864e5).toISOString().split('T')[0];
   try{
-    const r=await fetch(`https://intervals.icu/api/v1/athlete/${k.id}/wellness?oldest=${ago}&newest=${yesterday}`,{headers:{'Authorization':'Basic '+btoa('API_KEY:'+k.icu),'Accept':'application/json'}});
+    const r=await fetch(`https://intervals.icu/api/v1/athlete/${k.id}/wellness?oldest=${ago}&newest=${today}`,{headers:{'Authorization':'Basic '+btoa('API_KEY:'+k.icu),'Accept':'application/json'}});
     if(!r.ok)throw new Error('HTTP '+r.status);
     const data=await r.json();
     const latest=data[data.length-1]||{};
@@ -770,6 +770,16 @@ function explainMetric(type){
   text.textContent = info.text;
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
+  // iOS scroll fix
+  const ms = document.getElementById('modal-scroll');
+  let startY = 0;
+  ms.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, {passive:true});
+  ms.addEventListener('touchmove', e => {
+    const dy = startY - e.touches[0].clientY;
+    const atTop = ms.scrollTop === 0 && dy < 0;
+    const atBottom = ms.scrollTop + ms.clientHeight >= ms.scrollHeight && dy > 0;
+    if (!atTop && !atBottom) e.stopPropagation();
+  }, {passive:true});
 }
 
 function closeModal(){
