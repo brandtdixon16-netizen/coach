@@ -258,21 +258,18 @@ body{
 <div class="screen active" id="screen-setup">
   <div class="setup-logo">S11 COACH</div>
   <h1 class="setup-h">Your personal<br>running coach.</h1>
-  <p class="setup-sub">Connect your accounts to get started. All data stays on your device.</p>
+  <p class="setup-sub">Enter your Intervals.icu API key to connect. All data stays on your device.</p>
   <div class="field">
     <label>Intervals.icu API Key</label>
     <input type="text" id="icu-key" placeholder="icu_api_..." autocomplete="off">
   </div>
-  <div class="field">
-    <label>Anthropic API Key</label>
-    <input type="text" id="ant-key" placeholder="sk-ant-..." autocomplete="off">
-  </div>
+
   <div class="field">
     <label>Athlete ID</label>
     <input type="text" id="athlete-id" value="i580397" autocomplete="off">
   </div>
   <button class="btn-connect" onclick="doSetup()">Connect</button>
-  <p class="setup-note">Keys saved locally. Never shared with anyone except Intervals.icu and Anthropic.</p>
+  <p class="setup-note">Your key is saved locally on this device only.</p>
 </div>
 
 <!-- MAIN -->
@@ -507,10 +504,9 @@ const PROXY_URL='https://coach-proxy.brandtdixon16.workers.dev';
 
 function doSetup(){
   const icu=document.getElementById('icu-key').value.trim();
-  const ant=document.getElementById('ant-key').value.trim();
   const id=document.getElementById('athlete-id').value.trim()||ATHLETE_ID_DEFAULT;
-  if(!icu||!ant){alert('Please enter both API keys.');return}
-  localStorage.setItem('s11_icu',icu);localStorage.setItem('s11_ant',ant);localStorage.setItem('s11_id',id);
+  if(!icu){alert('Please enter your Intervals.icu API key.');return}
+  localStorage.setItem('s11_icu',icu);localStorage.setItem('s11_id',id);
   showMain();
 }
 
