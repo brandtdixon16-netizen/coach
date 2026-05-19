@@ -315,13 +315,19 @@ body{
     </div>
 
     <!-- Metric explanation modal -->
-    <div id="metric-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;align-items:flex-end;justify-content:center;max-width:430px;margin:0 auto" onclick="closeModal()">
-      <div style="background:#1c1c1e;border-radius:24px 24px 0 0;padding:28px 24px 48px;width:100%;border-top:1px solid rgba(255,255,255,0.1)" onclick="event.stopPropagation()">
-        <div style="width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:0 auto 24px"></div>
-        <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase;margin-bottom:6px" id="modal-label"></div>
-        <div style="font-size:26px;font-weight:800;letter-spacing:-0.5px;margin-bottom:16px;font-family:var(--font-tight)" id="modal-val"></div>
-        <div style="font-size:15px;line-height:1.75;color:rgba(255,255,255,0.7)" id="modal-text"></div>
-        <button onclick="closeModal()" style="margin-top:24px;width:100%;background:rgba(255,255,255,0.08);border:none;border-radius:14px;padding:15px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font)">Got it</button>
+    <div id="metric-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;align-items:flex-end;justify-content:center;max-width:430px;margin:0 auto" onclick="closeModal()">
+      <div style="background:#1c1c1e;border-radius:24px 24px 0 0;width:100%;border-top:1px solid rgba(255,255,255,0.1);max-height:75vh;display:flex;flex-direction:column" onclick="event.stopPropagation()">
+        <div style="padding:16px 24px 0;flex-shrink:0">
+          <div style="width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:0 auto 20px"></div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase;margin-bottom:6px" id="modal-label"></div>
+          <div style="font-size:28px;font-weight:800;letter-spacing:-0.5px;margin-bottom:12px;font-family:var(--font-tight)" id="modal-val"></div>
+        </div>
+        <div style="overflow-y:auto;padding:0 24px 16px;flex:1;-webkit-overflow-scrolling:touch">
+          <div style="font-size:15px;line-height:1.8;color:rgba(255,255,255,0.7)" id="modal-text"></div>
+        </div>
+        <div style="padding:12px 24px;padding-bottom:max(24px,env(safe-area-inset-bottom));flex-shrink:0;border-top:1px solid rgba(255,255,255,0.06)">
+          <button onclick="closeModal()" style="width:100%;background:rgba(255,255,255,0.1);border:none;border-radius:14px;padding:15px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font)">Got it</button>
+        </div>
       </div>
     </div>
 
@@ -755,22 +761,22 @@ function closeModal(){
 // ── FORM ZONE ──
 function getFormZone(ctl, atl) {
   if (ctl == null || atl == null) return { label: 'Unknown', color: 'c-muted' };
-  const pct = ((ctl - atl) / ctl) * 100;
-  if (pct > 0) return { label: 'Fresh', color: 'c-green', pct };
-  if (pct > -10) return { label: 'Transition', color: 'c-muted', pct };
-  if (pct > -30) return { label: 'Optimal', color: 'c-green', pct };
-  return { label: 'High Fatigue', color: 'c-red', pct };
+  const tsb = ctl - atl;
+  if (tsb > 5) return { label: 'Fresh', color: 'c-green', tsb };
+  if (tsb > -10) return { label: 'Transition', color: 'c-muted', tsb };
+  if (tsb > -30) return { label: 'Optimal', color: 'c-green', tsb };
+  return { label: 'High Fatigue', color: 'c-red', tsb };
 }
 
 function updateFormZone(ctl, atl) {
   const sub = document.getElementById('tsb-zone-label');
   if (!sub) return;
   if (ctl == null || atl == null) { sub.textContent = 'Tap to learn'; return; }
-  const pct = ((ctl - atl) / ctl) * 100;
+  const tsb = ctl - atl;
   let label, color;
-  if (pct > 0) { label = 'Fresh'; color = 'var(--green)'; }
-  else if (pct > -10) { label = 'Transition'; color = 'var(--text3)'; }
-  else if (pct > -30) { label = 'Optimal'; color = 'var(--green)'; }
+  if (tsb > 5) { label = 'Fresh'; color = 'var(--green)'; }
+  else if (tsb > -10) { label = 'Transition'; color = 'var(--text3)'; }
+  else if (tsb > -30) { label = 'Optimal'; color = 'var(--green)'; }
   else { label = 'High Fatigue'; color = 'var(--red)'; }
   sub.textContent = label;
   sub.style.color = color;
@@ -780,36 +786,43 @@ function updateFormZone(ctl, atl) {
 
 // ── RECENT ACTIVITY ──
 function updateRecentActivity(acts) {
-  if (!acts || acts.length === 0) return;
+  if (!acts || acts.length === 0) { console.log('No activities'); return; }
 
-  // Find most recent run
-  const runs = acts.filter(a => a.type === 'Run' || a.sport_type === 'Run').sort((a,b) => new Date(b.start_date_local) - new Date(a.start_date_local));
+  console.log('Processing activities, types:', acts.map(a => a.type || a.sport_type));
+
+  // Intervals.icu uses 'type' field with values like 'Run', 'Ride' etc
+  const runs = acts.filter(a => {
+    const t = (a.type || a.sport_type || '').toLowerCase();
+    return t === 'run' || t === 'running' || t === 'trailrun';
+  }).sort((a,b) => new Date(b.start_date_local||b.start_date) - new Date(a.start_date_local||a.start_date));
+
+  console.log('Runs found:', runs.length);
   if (runs.length === 0) return;
 
   const last = runs[0];
-  const distMi = last.distance ? (last.distance / 1609.34).toFixed(1) : null;
-  const pace = last.moving_time && last.distance ? formatPace(last.moving_time, last.distance) : null;
-  const durationMin = last.moving_time ? Math.round(last.moving_time / 60) : null;
-  const lastDate = last.start_date_local ? new Date(last.start_date_local) : null;
-  const isYesterday = lastDate && (new Date().getDate() - lastDate.getDate() === 1);
-  const isToday = lastDate && (new Date().getDate() === lastDate.getDate());
+  const distM = last.distance || last.distance_m || 0;
+  const distMi = distM ? (distM / 1609.34).toFixed(1) : null;
+  const movingTime = last.moving_time || last.elapsed_time || 0;
+  const pace = movingTime && distM ? formatPace(movingTime, distM) : null;
+  const durationMin = movingTime ? Math.round(movingTime / 60) : null;
+  const dateStr = last.start_date_local || last.start_date;
+  const lastDate = dateStr ? new Date(dateStr) : null;
+  const today = new Date();
+  const isToday = lastDate && lastDate.toDateString() === today.toDateString();
+  const yesterday = new Date(today); yesterday.setDate(today.getDate()-1);
+  const isYesterday = lastDate && lastDate.toDateString() === yesterday.toDateString();
 
-  if (!distMi) return;
+  console.log('Last run:', distMi, 'mi', pace, '/mi', 'isYesterday:', isYesterday, 'isToday:', isToday);
 
-  // Update today session detail with last run context
-  const detail = document.getElementById('today-session');
-  if (detail && (isYesterday || isToday)) {
-    const when = isToday ? 'Today' : 'Yesterday';
-    // Store for fueling context
-    athleteData.lastRun = { distMi: parseFloat(distMi), pace, durationMin, when, name: last.name };
-  }
+  if (!distMi || distMi === '0.0') return;
 
-  // Show last activity badge on today card
+  athleteData.lastRun = { distMi: parseFloat(distMi), pace, durationMin, name: last.name };
+
   const badge = document.getElementById('last-activity-badge');
-  if (badge && distMi) {
+  if (badge) {
     const when = isToday ? 'Today' : isYesterday ? 'Yesterday' : lastDate?.toLocaleDateString('en-US',{weekday:'short'});
     badge.style.display = 'flex';
-    badge.innerHTML = `<span style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.08em;text-transform:uppercase">${when}'s run</span><span style="font-family:var(--font-tight);font-size:15px;font-weight:700;color:var(--text)">${distMi}mi ${pace ? '· ' + pace + '/mi' : ''}</span>`;
+    badge.innerHTML = `<span style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.08em;text-transform:uppercase">${when}'s run</span><span style="font-family:var(--font-tight);font-size:16px;font-weight:700;color:var(--text);margin-top:2px">${distMi}mi${pace ? ' · ' + pace + '/mi' : ''}</span>`;
   }
 }
 
