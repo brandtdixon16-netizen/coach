@@ -513,7 +513,6 @@ function doSetup(){
 function goToSetup(){
   const k=keys();
   document.getElementById('icu-key').value=k.icu;
-  document.getElementById('ant-key').value=k.ant;
   document.getElementById('athlete-id').value=k.id;
   document.getElementById('screen-main').classList.remove('active');
   document.getElementById('screen-setup').classList.add('active');
@@ -645,7 +644,7 @@ async function send(override){
   const inputEl=document.getElementById('user-input');
   const text=override||inputEl.value.trim();
   if(!text||busy)return;
-  const k=keys();if(!k.ant){goToSetup();return}
+  const k=keys();
   busy=true;inputEl.value='';inputEl.style.height='auto';
   document.getElementById('send-btn').disabled=true;
   const fullMsg=buildCtx()+'\n\nATHLETE: '+text;
@@ -656,9 +655,9 @@ async function send(override){
   body.innerHTML='<div class="loading-row"><div class="pulse-dots"><i></i><i></i><i></i></div><span>Thinking...</span></div>';
   document.getElementById('scroll').scrollTo({top:9999,behavior:'smooth'});
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+    const res=await fetch(PROXY_URL,{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':k.ant,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-haiku-4-5',max_tokens:1024,system:SYSTEM,messages:history})
     });
     if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error((err?.error?.message||'API error '+res.status))}
@@ -842,7 +841,6 @@ function formatPace(movingTimeSecs, distanceM) {
 // ── AUTO VERDICT ──
 async function computeAutoVerdict() {
   if (!athleteData) return;
-  const k = keys();
 
   const { ctl, atl, tsb, hrv, rhr, sleepH } = athleteData;
   const now = new Date();
