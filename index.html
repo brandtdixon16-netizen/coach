@@ -891,8 +891,7 @@ Rules: TSB -10 to -30 is normal, do not flag. Tuesday 4mi run club is always GO.
     if (!res.ok) return;
     const data = await res.json();
     const reply = data.content?.[0]?.text?.trim() || '';
-    const first = reply.split('
-')[0].toUpperCase().trim();
+    const first = reply.split('\n')[0].toUpperCase().trim();
 
     if (first === 'GO') setVerdict('go', 'GO');
     else if (first.startsWith('MODIFY')) setVerdict('modify', 'MODIFY');
