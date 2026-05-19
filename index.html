@@ -415,10 +415,13 @@ body{
         <div class="coach-avatar">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         </div>
-        <div>
+        <div style="flex:1">
           <div class="coach-name">Section 11 Coach</div>
           <div class="coach-role">AI · Evidence-based</div>
         </div>
+        <button id="speak-btn" onclick="speakResponse()" style="display:none;background:var(--card2);border:1px solid var(--border2);border-radius:10px;width:36px;height:36px;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;transition:all 0.2s" title="Listen">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        </button>
       </div>
       <div class="coach-placeholder" id="coach-placeholder">Tap a quick action or ask me anything. Start with "Readiness report" for your morning check-in.</div>
       <div class="coach-body" id="coach-body" style="display:none"></div>
@@ -682,6 +685,9 @@ async function send(override){
     const reply=data.content?.[0]?.text||'No response.';
     history.push({role:'assistant',content:reply});
     body.textContent=reply;
+    // Show speak button
+    const speakBtn = document.getElementById('speak-btn');
+    if (speakBtn) speakBtn.style.display = 'flex';
     const first=reply.trim().split('\n')[0].toUpperCase();
     const badge=document.getElementById('verdict-badge');
     if(first.startsWith('GO')){badge.textContent='GO';badge.className='verdict-badge go'}
@@ -739,12 +745,12 @@ function explainMetric(type){
     ctl: {
       label: 'Fitness — Chronic Training Load',
       value: ctl != null ? ctl.toFixed(1) : '--',
-      text: 'Your fitness score. Calculated as a 42-day rolling average of your daily training stress. The higher this number, the fitter you are. You started this block at 30.8 and are targeting 87 by race week. Right now at ' + (ctl != null ? ctl.toFixed(1) : '--') + ' you are in Week 1 of Base — right on track.'
+      text: '42-day rolling average of training stress. Higher = fitter. Target 87 by race week. You are at ' + (ctl != null ? ctl.toFixed(1) : '--') + ' — Week 2 of Base, right on track.'
     },
     atl: {
       label: 'Fatigue — Acute Training Load',
       value: atl != null ? atl.toFixed(1) : '--',
-      text: 'Your fatigue score. A 7-day rolling average of training stress. It rises fast when you train hard and drops quickly on easy days. When Fatigue is higher than Fitness it means your body is freshly stressed — completely normal mid-week or after a long run. It is not a warning sign on its own.'
+      text: '7-day rolling average of training stress. Rises when you train hard, drops on easy days. Higher than Fitness just means your body is freshly stressed — normal after hard sessions. Not a warning sign on its own.'
     },
     tsb: {
       label: 'Form — Training Stress Balance',
@@ -752,12 +758,12 @@ function explainMetric(type){
       text: (() => {
         const zone = getFormZone(ctl, atl);
         const zoneName = zone.label;
-        const baseText = 'Your form score — Fitness minus Fatigue. Negative means you are carrying training load and your body is adapting. Positive means you are rested and fresh.';
+        const baseText = 'Fitness minus Fatigue. Negative = carrying load and adapting. Positive = fresh and rested.';
         const zoneText = {
-          'Fresh': ' You are currently Fresh. Your body is recovered and ready. Good time to push quality sessions.',
-          'Transition': ' You are in Transition — slightly fatigued from recent training. Normal and fine. Easy days are doing their job.',
-          'Optimal': ' You are in the Optimal training zone. This is exactly where you want to be mid-block. Your body is adapting without being overstressed. -10 to -30 is the target range.',
-          'High Fatigue': ' You are carrying High Fatigue. This does not mean stop — but it means your easy days need to stay genuinely easy and your next hard session should be monitored carefully.',
+          'Fresh': ' FRESH — body recovered, ready to push.',
+          'Transition': ' TRANSITION — slightly fatigued, normal. Easy days working.',
+          'Optimal': ' OPTIMAL — exactly where you want to be mid-block. Target range is -10 to -30.',
+          'High Fatigue': ' HIGH FATIGUE — keep easy days easy, monitor next hard session.',
           'Unknown': ''
         };
         return baseText + (zoneText[zoneName] || '');
@@ -1005,6 +1011,67 @@ function buildFuelingPlan() {
 
   const plan = plans[dow];
   if (plan) plan();
+}
+
+
+// ── TEXT TO SPEECH ──
+let currentAudio = null;
+let isSpeaking = false;
+
+async function speakResponse() {
+  const btn = document.getElementById('speak-btn');
+  const body = document.getElementById('coach-body');
+  if (!body || !body.textContent.trim()) return;
+
+  // Stop if already speaking
+  if (isSpeaking && currentAudio) {
+    currentAudio.pause();
+    currentAudio = null;
+    isSpeaking = false;
+    btn.style.color = 'var(--text2)';
+    btn.style.borderColor = 'var(--border2)';
+    return;
+  }
+
+  // Clean text for speech - remove markdown-like formatting
+  let text = body.textContent.trim();
+  text = text.replace(/^(GO|MODIFY|SKIP)\n/i, '');
+  text = text.substring(0, 2500); // ElevenLabs limit per request
+
+  btn.style.color = 'var(--accent)';
+  btn.style.borderColor = 'var(--accent)';
+  isSpeaking = true;
+
+  try {
+    const res = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Request-Type': 'tts'
+      },
+      body: JSON.stringify({ text })
+    });
+
+    if (!res.ok) throw new Error('TTS failed');
+
+    const audioBlob = await res.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+    currentAudio = new Audio(audioUrl);
+    currentAudio.play();
+
+    currentAudio.onended = () => {
+      isSpeaking = false;
+      btn.style.color = 'var(--text2)';
+      btn.style.borderColor = 'var(--border2)';
+      URL.revokeObjectURL(audioUrl);
+    };
+
+  } catch(e) {
+    console.log('TTS error:', e.message);
+    isSpeaking = false;
+    btn.style.color = 'var(--text2)';
+    btn.style.borderColor = 'var(--border2)';
+  }
 }
 
 window.addEventListener('load',()=>{
