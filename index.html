@@ -499,7 +499,7 @@ FORMAT: Pre-workout: GO or MODIFY or SKIP on first line alone. Then load context
 
 let history = [], athleteData = null, busy = false, recognition = null, isRecording = false;
 
-function keys(){return{icu:localStorage.getItem('s11_icu')||'',ant:localStorage.getItem('s11_ant')||'',id:localStorage.getItem('s11_id')||ATHLETE_ID_DEFAULT}}
+function keys(){return{icu:'351ate3ii9gxfj3mcjgqj191e',ant:'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',id:'i580397'}}
 
 function doSetup(){
   const icu=document.getElementById('icu-key').value.trim();
@@ -987,13 +987,7 @@ function buildFuelingPlan() {
 }
 
 window.addEventListener('load',()=>{
-  // Pre-populate setup fields from saved keys
-  const saved=keys();
-  if(saved.icu)document.getElementById('icu-key').value=saved.icu;
-  if(saved.ant)document.getElementById('ant-key').value=saved.ant;
-  if(saved.id)document.getElementById('athlete-id').value=saved.id;
-  const k=keys();
-  if(k.icu&&k.ant)showMain();
+  showMain();
 });
 </script>
 </body>
