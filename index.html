@@ -585,7 +585,9 @@ function updateRaceCard(){
 
 async function fetchData(){
   const k=keys();
-  const today=new Date().toISOString().split('T')[0];
+  const todayDate=new Date();
+  const today=todayDate.toISOString().split('T')[0];
+  const yesterday=new Date(Date.now()-864e5).toISOString().split('T')[0];
   const ago=new Date(Date.now()-14*864e5).toISOString().split('T')[0];
   try{
     const r=await fetch(`https://intervals.icu/api/v1/athlete/${k.id}/wellness?oldest=${ago}&newest=${yesterday}`,{headers:{'Authorization':'Basic '+btoa('API_KEY:'+k.icu),'Accept':'application/json'}});
