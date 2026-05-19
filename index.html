@@ -528,7 +528,6 @@ function init(){
   updateHeader();
   buildWeekStrip();
   updateRaceCard();
-  buildFuelingPlan();
   fetchData();
 }
 
@@ -607,6 +606,24 @@ async function fetchData(){
     setW('w-rhr',rhr,v=>Math.round(v)+' bpm',v=>v<55?'c-green':v<65?'c-muted':'c-amber');
     setW('w-sleep',sleepH,v=>v.toFixed(1)+'h',v=>v>=7?'c-green':v>=6?'c-muted':'c-amber');
     updateFormZone(ctl,atl);
+
+    // Fetch activities
+    try {
+      const actRes = await fetch(
+        `https://intervals.icu/api/v1/athlete/${k.id}/activities?oldest=${ago}&newest=${today}&cols=name,type,sport_type,start_date_local,distance,moving_time`,
+        {headers:{'Authorization':'Basic '+btoa('API_KEY:'+k.icu),'Accept':'application/json'}}
+      );
+      if(actRes.ok){
+        const acts = await actRes.json();
+        console.log('Activities:', acts.length, acts[0]);
+        athleteData.activities = acts;
+        updateRecentActivity(acts);
+      }
+    } catch(ae){ console.log('Activities fetch failed:', ae.message); }
+
+    buildFuelingPlan();
+    computeAutoVerdict();
+
   }catch(e){
     document.getElementById('err-container').innerHTML='<div class="err-bar">Could not load Intervals.icu data: '+e.message+'</div>';
     athleteData={ctl:null,atl:null,tsb:null,hrv:null,rhr:null,sleepH:null,today};
